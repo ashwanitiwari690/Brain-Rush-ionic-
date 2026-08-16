@@ -1,0 +1,362 @@
+@import '@ionic/angular/css/core.css';
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/flex-utils.css';
+
+:root {
+    --bg: #050817;
+    --bg2: #0b1130;
+    --panel: rgba(19, 29, 66, .82);
+    --panel2: rgba(28, 43, 91, .74);
+    --cyan: #2de9ff;
+    --blue: #4d7cff;
+    --purple: #8066ff;
+    --pink: #f25cff;
+    --green: #5dffac;
+    --red: #ff637d;
+    --gold: #ffd75a;
+    --text: #f7f9ff;
+    --muted: #9aa8cc;
+    --border: rgba(111, 128, 255, .55);
+    --shadow: 0 18px 50px rgba(0, 0, 0, .38);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+    background: var(--bg)
+}
+
+* {
+    box-sizing: border-box
+}
+
+html,
+body,
+ion-app,
+ion-content {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text)
+}
+
+body {
+    overflow-x: hidden
+}
+
+ion-content {
+    --background: transparent
+}
+
+.page {
+    min-height: 100%;
+    position: relative;
+    overflow-x: hidden;
+    background: radial-gradient(circle at 20% 10%, rgba(43, 102, 255, .16), transparent 28%), radial-gradient(circle at 85% 25%, rgba(196, 61, 255, .13), transparent 30%), linear-gradient(145deg, #040714, #0a1030 55%, #06091a);
+}
+
+.page:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .22;
+    background-image: linear-gradient(120deg, transparent 0 48%, rgba(44, 230, 255, .22) 49%, transparent 50%), linear-gradient(35deg, transparent 0 68%, rgba(191, 77, 255, .18) 69%, transparent 70%);
+    background-size: 260px 260px, 340px 340px
+}
+
+.shell {
+    width: min(100%, 520px);
+    margin: auto;
+    padding: calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));
+    position: relative;
+    z-index: 1
+}
+
+.wide {
+    width: min(100%, 760px)
+}
+
+.title {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -1px;
+     color: #38caff;
+}
+
+.subtitle {
+    color: var(--muted);
+    margin-top: 5px
+}
+
+.neon {
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(45, 233, 255, .45), 0 0 28px rgba(45, 233, 255, .18)
+}
+
+.card {
+    background: linear-gradient(145deg, rgba(34, 51, 105, .86), rgba(10, 17, 46, .9));
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, .05);
+    backdrop-filter: blur(12px)
+}
+
+.btn {
+    min-height: 52px;
+    border: 0;
+    border-radius: 18px;
+    padding: 0 22px;
+    color: #fff;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: .4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    cursor: pointer
+}
+
+.primary {
+    background: linear-gradient(100deg, #20dfff, #4e7cff);
+    box-shadow: 0 0 24px rgba(35, 222, 255, .4)
+}
+
+.secondary {
+    background: linear-gradient(100deg, #5d56dd, #7656ff);
+    box-shadow: 0 0 18px rgba(112, 92, 255, .25)
+}
+
+.ghost {
+    background: rgba(52, 67, 124, .5);
+    border: 1px solid rgba(111, 128, 255, .45)
+}
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(35, 47, 92, .7);
+    color: #fff;
+    display: grid;
+    place-items: center
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px
+}
+
+.bottom-nav {
+    position: sticky;
+    bottom: 10px;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    padding: 8px;
+    border: 1px solid rgba(110, 130, 255, .4);
+    border-radius: 20px;
+    background: rgba(8, 14, 37, .92);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .45);
+    margin-top: 20px
+}
+
+.nav-item {
+    border: 0;
+    background: none;
+    color: #7f8db2;
+    font-size: 10px;
+    font-weight: 800;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px
+}
+
+.nav-item.active {
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(45, 233, 255, .35)
+}
+
+.nav-item ion-icon {
+    font-size: 21px
+}
+
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px
+}
+
+.stat {
+    padding: 12px;
+    text-align: center;
+    margin: 10px 0px;
+}
+
+.stat small,
+.label {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 800
+}
+
+.stat strong {
+    display: block;
+    font-size: 19px;
+    margin-top: 3px
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px
+}
+
+.game-card {
+    padding: 16px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between
+}
+
+.game-icon {
+    font-size: 34px
+}
+
+.game-card h3 {
+    margin: 6px 0 2px;
+    font-size: 17px
+}
+
+.game-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid rgba(125, 145, 255, .45);
+    background: rgba(63, 79, 143, .45);
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #cbd5f5;
+    margin-top: 5px;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 22px 0 10px
+}
+
+.section-title h2 {
+    font-size: 16px;
+    margin: 0;
+        color: var(--muted);
+}
+
+.progress {
+    height: 9px;
+    border-radius: 99px;
+    background: #1b274d;
+    overflow: hidden
+}
+
+.progress i {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--cyan), #5a75ff, var(--purple));
+    box-shadow: 0 0 12px rgba(45, 233, 255, .35)
+}
+
+@media(min-width:700px) {
+    .shell {
+        padding-top: 32px
+    }
+
+    .bottom-nav {
+        position: static
+    }
+
+    .page {
+        min-height: 100vh
+    }
+
+    .grid2 {
+        grid-template-columns: repeat(3, 1fr)
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+strong,
+b,
+small,
+label {
+    color: #cad4f4
+}
+
+button {
+    font-family: inherit;
+    color: inherit
+}
+
+ion-content::part(scroll) {
+    scrollbar-width: none
+}
+
+ion-content::part(scroll)::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0
+}
+
+.shell {
+    overflow: visible
+}
+
+.page {
+    overflow: visible
+}
+
+.bottom-nav {
+    margin-bottom: env(safe-area-inset-bottom)
+}
+/* Mobile/WebView performance: avoid expensive backdrop blur on every card. */
+.card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+.game-card {
+    contain: layout paint;
+    content-visibility: auto;
+    contain-intrinsic-size: 330px;
+}

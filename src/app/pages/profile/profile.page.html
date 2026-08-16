@@ -1,0 +1,99 @@
+<ion-content [fullscreen]="true">
+    <main class="page">
+        <div class="shell">
+            <header class="topbar"><button class="icon-btn" (click)="go('/home')"><ion-icon
+                        name="arrow-back"></ion-icon></button>
+                <div class="title">{{'profile.title' | translate}}</div><button class="icon-btn"
+                    (click)="edit()"><ion-icon name="create-outline"></ion-icon></button>
+            </header>
+            <section class="card profile-head">
+                <div class="avatar">{{game.profile.avatar}}</div>
+                <div>
+                    <h1>{{game.profile.name}}</h1>
+                    <p>{{'profile.level' | translate}} {{game.level}}</p>
+                    <div class="progress"><i [style.width.%]="game.xp"></i></div><small>{{game.xp}} / 100 {{'common.xp'
+                        | translate}}</small>
+                    <div class="bio">{{game.profile.bio}}</div>
+                </div>
+            </section>
+            <div class="stat-grid">
+                <div class="card stat"><small>{{'profile.bestScore' | translate}}</small><strong>{{game.bestScore |
+                        number}}</strong></div>
+                <div class="card stat"><small>{{'profile.gamesPlayed' |
+                        translate}}</small><strong>{{game.gamesPlayed}}</strong></div>
+                <div class="card stat"><small>{{'common.accuracy' |
+                        translate}}</small><strong>{{game.accuracy}}%</strong></div>
+                <div class="card stat"><small>{{'profile.currStreak' | translate}}</small><strong>{{game.streak}}
+                        Days</strong></div>
+            </div>
+            <div class="tabs"><button [class.active]="!showStats" (click)="showStats=false">{{'profile.achievements' |
+                    translate}}</button><button [class.active]="showStats" (click)="showStats=true">{{'profile.stats' |
+                    translate}}</button></div>
+            <section *ngIf="!showStats" class="badges">
+                <div class="badge unlocked">🏆<span>{{'profile.firstRush' | translate}}</span></div>
+                <div class="badge unlocked">🔥<span>{{'profile.streak' | translate}}</span></div>
+                <div class="badge unlocked">⚡<span>{{'profile.speed' | translate}}</span></div>
+                <div class="badge locked"><ion-icon name="lock-closed"></ion-icon><span>{{'profile.legend' |
+                        translate}}</span></div>
+                <div class="badge locked"><ion-icon name="lock-closed"></ion-icon><span>{{'profile.master' |
+                        translate}}</span></div>
+                <div class="badge unlocked">⭐<span>{{'profile.level' | translate}} {{game.level}}</span></div>
+            </section>
+            <section *ngIf="showStats" class="card stats-panel">
+                <div><span>{{'profile.bestScore' | translate}}</span><b>{{game.bestScore | number}}</b></div>
+                <div><span>{{'profile.totalGames' | translate}}</span><b>{{game.gamesPlayed}}</b></div>
+                <div><span>{{'profile.lifetimeAccuracy' | translate}}</span><b>{{game.accuracy}}%</b></div>
+                <div><span>{{'common.coins' | translate}}</span><b>🪙 {{game.coins | number}}</b></div>
+                <div><span>{{'profile.level' | translate}}</span><b>{{game.level}}</b></div>
+                <div><span>{{'common.xp' | translate}}</span><b>{{game.xp}} / 100</b></div>
+            </section>
+            <button class="btn secondary" (click)="edit()"><ion-icon name="create-outline"></ion-icon> {{'profile.edit'
+                | translate}}</button>
+            <section *ngIf="editing" class="card edit-card">
+                <div class="edit-head">
+                    <h2>{{'profile.editTitle' | translate}}</h2><button class="icon-btn small"
+                        (click)="cancel()"><ion-icon name="close"></ion-icon></button>
+                </div><label>{{'profile.playerName' | translate}}<input [(ngModel)]="draft.name"
+                        maxlength="18"></label><label>{{'profile.about' | translate}}<textarea [(ngModel)]="draft.bio"
+                        maxlength="100"></textarea></label>
+                <div class="label">{{'profile.chooseAvatar' | translate}}</div>
+                <div class="avatar-grid"><button *ngFor="let a of avatars" [class.selected]="draft.avatar===a"
+                        (click)="draft.avatar=a">{{a}}</button></div>
+                <div class="edit-actions"><button class="btn ghost" (click)="cancel()">{{'common.cancel' |
+                        translate}}</button><button class="btn primary" (click)="save()"><ion-icon
+                            name="checkmark"></ion-icon>{{'common.save' | translate}} {{'profile.title' |
+                        translate}}</button></div>
+            </section>
+            @if (canWithdraw) {
+            <section class="card profile-withdraw">
+                <div class="withdraw-head">
+                    <div class="withdraw-icon">🪙</div>
+                    <div>
+                        <b>{{ 'settings.withdrawTitle' | translate }}</b>
+                        <small>{{ 'settings.withdrawDesc' | translate }}</small>
+                    </div>
+                    <strong>{{game.coins | number}} {{ 'common.coins' | translate }}</strong>
+                </div>
+                <label class="withdraw-label" for="profile-withdraw-number">
+                    {{ 'settings.withdrawNumber' | translate }}
+                </label>
+                <input id="profile-withdraw-number" class="withdraw-input" type="tel" inputmode="numeric"
+                    autocomplete="tel" maxlength="10" placeholder="Enter 10 digit number"
+                    [value]="withdrawNumber" (input)="onWithdrawNumberInput($event)">
+                <button type="button" class="withdraw-btn" [disabled]="!withdrawNumberValid"
+                    (click)="withdraw()">{{ 'settings.withdrawButton' | translate }}</button>
+                @if (withdrawMessage) {
+                    <small class="withdraw-message">{{ withdrawMessage }}</small>
+                }
+            </section>
+            }
+            <nav class="bottom-nav"><button class="nav-item" (click)="go('/home')"><ion-icon
+                        name="home"></ion-icon>{{'common.home' | translate}}</button><button class="nav-item"
+                    (click)="go('/game')"><ion-icon name="game-controller"></ion-icon>{{'common.play' |
+                    translate}}</button><button class="nav-item" (click)="go('/leaderboard')"><ion-icon
+                        name="podium"></ion-icon>{{'common.ranks' | translate}}</button><button
+                    class="nav-item active"><ion-icon name="person-circle"></ion-icon>{{'common.profile' |
+                    translate}}</button></nav>
+        </div>
+    </main>
+</ion-content>

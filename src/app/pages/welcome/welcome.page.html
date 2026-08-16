@@ -1,0 +1,109 @@
+<ion-content [fullscreen]="true">
+  <main class="page welcome">
+    <div class="shell">
+
+      <div class="welcome-top">
+        <span class="mini-badge">
+          <ion-icon name="sparkles"></ion-icon>
+          {{'welcome.new' | translate}}
+        </span>
+      </div>
+
+      <!-- First-launch controls: language + audio -->
+      <section class="welcome-controls" aria-label="Language and audio controls">
+        <!-- <div class="control-card">
+          <div class="control-label">
+            <ion-icon name="language"></ion-icon>
+            <span>{{'welcome.language' | translate}}</span>
+          </div>
+
+          <div class="language-switch">
+            <button
+              type="button"
+              [class.active]="language.language() === 'en'"
+              (click)="selectLanguage('en')">
+              🇬🇧 English
+            </button>
+            <button
+              type="button"
+              [class.active]="language.language() === 'hi'"
+              (click)="selectLanguage('hi')">
+              🇮🇳 हिन्दी
+            </button>
+          </div>
+        </div> -->
+
+        <div class="audio-controls">
+          <button
+            type="button"
+            class="audio-chip"
+            [class.off]="!audio.musicEnabled"
+            (click)="toggleMusic()"
+            [attr.aria-label]="audio.musicEnabled ? 'Disable music' : 'Enable music'">
+            <ion-icon [name]="audio.musicEnabled ? 'musical-notes' : 'volume-mute'"></ion-icon>
+            <span>{{'welcome.music' | translate}}</span>
+            <b>{{(audio.musicEnabled ? 'common.on' : 'common.off') | translate}}</b>
+          </button>
+
+          <button
+            type="button"
+            class="audio-chip"
+            [class.off]="!audio.soundEnabled"
+            (click)="toggleSound()"
+            [attr.aria-label]="audio.soundEnabled ? 'Disable sound' : 'Enable sound'">
+            <ion-icon [name]="audio.soundEnabled ? 'volume-high' : 'volume-mute'"></ion-icon>
+            <span>{{'welcome.sound' | translate}}</span>
+            <b>{{(audio.soundEnabled ? 'common.on' : 'common.off') | translate}}</b>
+          </button>
+        </div>
+      </section>
+
+      <section class="welcome-hero">
+        <div class="brain-orb">
+          <div class="orb-ring r1"></div>
+          <div class="orb-ring r2"></div>
+          <div class="brain">🧠</div>
+          <span class="dot d1"></span>
+          <span class="dot d2"></span>
+          <span class="dot d3"></span>
+          <span class="circuit c1"></span>
+          <span class="circuit c2"></span>
+        </div>
+
+        <div class="brand">BRAIN <span>RUSH</span></div>
+        <div class="tagline">{{'welcome.tag' | translate}}</div>
+
+        <h1>
+          {{'welcome.title1' | translate}}<br>
+          <span>{{'welcome.title2' | translate}}</span>
+        </h1>
+
+        <p>{{'welcome.desc' | translate}}</p>
+      </section>
+
+      <section class="welcome-actions">
+        <button class="btn primary" (click)="play()">
+          <ion-icon name="play"></ion-icon>
+          {{'common.playNow' | translate}}
+        </button>
+
+        <button class="how" (click)="howItWorks()">
+          <ion-icon name="help-circle"></ion-icon>
+          {{'welcome.how' | translate}}
+        </button>
+      </section>
+
+      <div class="welcome-foot">
+        <span>
+          <ion-icon name="timer"></ion-icon>
+          {{'welcome.rush' | translate}}
+        </span>
+        <span>
+          <ion-icon name="trophy"></ion-icon>
+          {{'welcome.ranks' | translate}}
+        </span>
+      </div>
+
+    </div>
+  </main>
+</ion-content>

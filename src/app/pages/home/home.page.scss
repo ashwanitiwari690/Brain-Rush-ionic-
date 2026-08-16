@@ -1,0 +1,195 @@
+.hero{margin-top:14px;padding:20px;display:flex;min-height:245px;overflow:hidden;position:relative}.hero-copy{position:relative;z-index:2;max-width:72%}.hero h1{font-size:31px;line-height:1.02;margin:15px 0 7px}.hero h1 span{color:var(--cyan)}.hero p{color:var(--muted);font-size:12px;line-height:1.45}.hero .btn{margin-top:17px}.hero-brain{position:absolute;right:-15px;bottom:22px;font-size:110px;filter:drop-shadow(0 0 22px rgba(45,233,255,.6));opacity:.95}.daily{padding:16px;display:flex;align-items:center;justify-content:space-between;gap:15px}.daily h3{margin:11px 0;font-size:17px}.daily small{display:block;margin-top:6px;color:var(--muted);font-size:10px}.reward{min-width:70px;text-align:center;color:var(--gold);font-size:20px}.reward b{display:block;font-size:22px}.reward span{font-size:8px;color:var(--muted);letter-spacing:1px}.progress-card{padding:16px}.p-head,.progress-foot{display:flex;justify-content:space-between;font-size:11px;font-weight:800}.p-head{margin-bottom:9px}.progress-foot{margin-top:11px;color:var(--muted)}
+
+.section-link{border:0;background:transparent;color:var(--cyan);font-size:20px}.daily{cursor:pointer}
+
+.game-card{min-height:238px;padding:15px}.game-card h3{color:var(--text)}.level-heading{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.7px}.level-heading b{color:var(--gold);font-size:11px}.level-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}.level-btn{min-width:0;min-height:48px;border:1px solid rgba(111,128,255,.38);border-radius:12px;background:rgba(13,24,57,.82);color:#7180a8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.2px}.level-btn.unlocked{color:var(--text);border-color:rgba(90,123,255,.7);background:linear-gradient(145deg,rgba(47,67,132,.9),rgba(20,31,71,.9))}.level-btn.completed{border-color:rgba(93,255,172,.72);box-shadow:0 0 12px rgba(93,255,172,.14);color:var(--green)}.level-btn:disabled{opacity:.52;cursor:not-allowed}.level-btn:not(:disabled):active{transform:scale(.96)}.level-number{font-size:11px;color:var(--cyan)}.level-btn ion-icon{font-size:11px}.level-hint{display:block;margin-top:7px;color:var(--muted);font-size:8px;line-height:1.2}@media(max-width:380px){.grid2{grid-template-columns:1fr}.game-card{min-height:215px}}
+
+/* Ten-level progression: compact, touch-friendly and easy to scan on mobile. */
+.game-card{min-height:250px}
+.level-row{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.level-btn{min-height:50px;padding:4px 2px}
+.level-btn .level-number{font-size:13px;line-height:1}
+.level-btn span:nth-child(2){font-size:7px;white-space:nowrap}
+.level-hint{min-height:20px}
+@media(max-width:380px){.game-card{min-height:330px}.level-row{gap:4px}.level-btn{min-height:46px}.level-btn span:nth-child(2){font-size:6.5px}}
+
+/* Refined game-mode UI: larger hierarchy, no overlapping level labels. */
+.game-card{
+  min-height: 250px;
+  padding: 16px;
+  contain: layout paint;
+}
+.game-card .game-icon{font-size:32px;line-height:1;margin-bottom:8px}
+.game-card h3{font-size:17px;margin:0 0 4px;color:var(--text)}
+.game-card p{min-height:30px;line-height:1.35}
+.level-heading{margin-top:14px;font-size:10px}
+.level-row{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+  margin-top:9px;
+}
+.level-btn{
+  position:relative;
+  min-width:0;
+  height:48px;
+  min-height:48px;
+  padding:4px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(8,17,43,.8);
+  border:1px solid rgba(111,128,255,.28);
+  color:#52638f;
+}
+.level-btn .level-number{font-size:14px;font-weight:1000;line-height:1}
+.level-btn ion-icon{position:absolute;right:4px;bottom:3px;font-size:10px}
+.level-btn.unlocked{color:var(--cyan);background:linear-gradient(145deg,rgba(36,61,125,.95),rgba(13,25,58,.95));border-color:rgba(77,124,255,.72)}
+.level-btn.completed{color:var(--green);border-color:rgba(93,255,172,.8);box-shadow:0 0 12px rgba(93,255,172,.14)}
+.level-btn.completed .level-number{color:#fff}
+.level-btn:disabled{opacity:.62}
+.level-hint{font-size:8px;line-height:1.25;margin-top:9px}
+
+@media(max-width:699px){
+  .grid2{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .game-card{min-height:295px;padding:13px}
+}
+@media(max-width:430px){
+  .grid2{grid-template-columns: repeat(2, minmax(0, 1fr));}
+  .game-card{min-height:0}
+}
+
+
+/* Rewarded video */
+.reward-video-card{
+  margin-top:14px;
+  padding:16px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(135px,180px);
+  gap:14px;
+  align-items:center;
+  border-color:rgba(255,215,90,.38);
+}
+.reward-video-copy h3{
+  margin:8px 0 5px;
+  font-size:17px;
+  color:var(--text);
+}
+.reward-video-copy p{
+  margin:0;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.45;
+}
+.reward-video-action{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:8px;
+}
+.reward-balance{
+  color:var(--gold);
+  font-size:13px;
+  margin:0;
+}
+.reward-balance strong{
+  color:var(--text);
+  font-size:17px;
+}
+.reward-btn{
+  min-height:44px;
+  padding:0 12px;
+  font-size:11px;
+  border-radius:14px;
+  white-space:nowrap;
+}
+.reward-btn.cooldown{
+  background:rgba(45,233,255,.10);
+  border:1px solid rgba(45,233,255,.25);
+  color:var(--cyan);
+  box-shadow:none;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.3px;
+}
+.reward-btn:disabled{
+  opacity:.58;
+  box-shadow:none;
+}
+
+.reward-video-modal{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
+.reward-video-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(2,5,18,.86);
+}
+.reward-video-dialog{
+  position:relative;
+  z-index:1;
+  width:min(100%,360px);
+  max-height:calc(100vh - 40px);
+  overflow:auto;
+  padding:18px;
+  border:1px solid rgba(77,124,255,.72);
+  border-radius:22px;
+  background:linear-gradient(145deg,#18295a,#080f2c);
+  box-shadow:0 25px 70px rgba(0,0,0,.65),0 0 30px rgba(45,233,255,.12);
+}
+.reward-video-dialog h2{
+  margin:10px 0 5px;
+  font-size:20px;
+  color:var(--text);
+}
+.reward-video-dialog p{
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.45;
+  margin:0 0 12px;
+}
+.reward-close{
+  position:absolute;
+  right:10px;
+  top:10px;
+  width:34px;
+  height:34px;
+  border:0;
+  background:rgba(7,14,35,.7);
+  color:var(--muted);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+}
+.reward-close ion-icon{font-size:21px}
+.reward-video{
+  display:block;
+  width:100%;
+  max-height:54vh;
+  object-fit:cover;
+  border-radius:15px;
+  background:#050817;
+  border:1px solid rgba(111,128,255,.35);
+}
+.reward-video-footer{
+  margin-top:11px;
+  padding:10px;
+  border-radius:12px;
+  text-align:center;
+  color:var(--gold);
+  font-weight:900;
+  font-size:12px;
+  background:rgba(255,215,90,.08);
+  border:1px solid rgba(255,215,90,.22);
+}
+
+@media(max-width:430px){
+  .reward-video-card{grid-template-columns:1fr}
+  .reward-video-action{display:grid;grid-template-columns:1fr 1.5fr;gap:8px;align-items:center}
+  .reward-balance{margin:0}
+}

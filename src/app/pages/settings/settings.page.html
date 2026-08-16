@@ -1,0 +1,194 @@
+<ion-content [fullscreen]="true">
+  <main class="page">
+    <div class="shell">
+
+      <header class="topbar">
+        <button
+          class="icon-btn"
+          (click)="go()"
+          [attr.aria-label]="'common.back' | translate">
+          <ion-icon name="arrow-back"></ion-icon>
+        </button>
+
+        <div class="title">{{ 'settings.title' | translate }}</div>
+        <div></div>
+      </header>
+
+      <div class="settings-section">
+        <div class="label">{{ 'settings.audio' | translate }}</div>
+
+        <div class="card rows">
+          <div class="row">
+            <ion-icon name="volume-high"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.sound' | translate }}</b>
+              <small>{{ 'settings.soundDesc' | translate }}</small>
+            </span>
+
+            <ion-toggle
+              [checked]="audio.soundEnabled"
+              (ionChange)="toggleSound($event)">
+            </ion-toggle>
+          </div>
+
+          <div class="row">
+            <ion-icon name="musical-notes"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.music' | translate }}</b>
+              <small>{{ 'settings.musicDesc' | translate }}</small>
+            </span>
+
+            <ion-toggle
+              [checked]="audio.musicEnabled"
+              (ionChange)="toggleMusic($event)">
+            </ion-toggle>
+          </div>
+
+          <div class="row">
+            <ion-icon name="pulse"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.haptics' | translate }}</b>
+              <small>{{ 'settings.hapticsDesc' | translate }}</small>
+            </span>
+
+            <ion-toggle
+              [checked]="audio.hapticsEnabled"
+              (ionChange)="toggleHaptics($event)">
+            </ion-toggle>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="label">{{ 'settings.language' | translate }}</div>
+
+        <div class="card language-card">
+          <div class="language-row">
+            <ion-icon name="language"></ion-icon>
+
+            <div class="language-copy">
+              <b>{{ 'settings.language' | translate }}</b>
+              <small>{{ 'settings.languageDesc' | translate }}</small>
+            </div>
+
+            <div class="language-picker">
+              <button
+                type="button"
+                class="language-trigger"
+                [class.open]="languageOpen"
+                (click)="toggleLanguageMenu()"
+                [attr.aria-expanded]="languageOpen"
+                aria-haspopup="listbox">
+
+                <span>
+                  {{ language.language() === 'en'
+                    ? ('settings.english' | translate)
+                    : ('settings.hindi' | translate) }}
+                </span>
+
+                <ion-icon
+                  name="chevron-down"
+                  [class.rotated]="languageOpen">
+                </ion-icon>
+              </button>
+
+              @if (languageOpen) {
+              <div
+                class="language-menu"
+                role="listbox">
+
+                <button
+                  type="button"
+                  role="option"
+                  class="language-option"
+                  [class.selected]="language.language() === 'en'"
+                  [attr.aria-selected]="language.language() === 'en'"
+                  (click)="setLanguage('en')">
+
+                  <span class="language-flag">🇬🇧</span>
+                  <span class="language-name">English</span>
+
+                  @if (language.language() === 'en') {
+                    <span class="check">✓</span>
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  role="option"
+                  class="language-option"
+                  [class.selected]="language.language() === 'hi'"
+                  [attr.aria-selected]="language.language() === 'hi'"
+                  (click)="setLanguage('hi')">
+
+                  <span class="language-flag">🇮🇳</span>
+                  <span class="language-name">हिन्दी</span>
+
+                  @if (language.language() === 'hi') {
+                    <span class="check">✓</span>
+                  }
+                </button>
+              </div>
+            }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="label">{{ 'settings.account' | translate }}</div>
+
+        <div class="card rows">
+          <button class="row button-row" (click)="openProfile()">
+            <ion-icon name="person-circle"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.profile' | translate }}</b>
+              <small>{{ 'settings.profileDesc' | translate }}</small>
+            </span>
+
+            <b>›</b>
+          </button>
+
+          <button class="row button-row danger" (click)="reset()">
+            <ion-icon name="trash"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.reset' | translate }}</b>
+              <small>{{ 'settings.resetDesc' | translate }}</small>
+            </span>
+
+            <b>›</b>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="label">{{ 'settings.app' | translate }}</div>
+
+        <div class="card rows">
+          <div class="row">
+            <ion-icon name="information-circle"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.about' | translate }}</b>
+              <small>{{ 'settings.aboutDesc' | translate }}</small>
+            </span>
+          </div>
+
+          <div class="row app-version">
+            <span>
+              <b>{{ 'settings.version' | translate }}</b>
+            </span>
+
+            <b>1.1.0</b>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</ion-content>

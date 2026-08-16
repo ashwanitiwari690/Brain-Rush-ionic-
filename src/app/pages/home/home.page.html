@@ -1,0 +1,125 @@
+<ion-content [fullscreen]="true">
+  <main class="page">
+    <div class="shell">
+      <header class="topbar">
+        <div>
+          <div class="label">{{'home.welcome' | translate}}</div>
+          <div class="title">Brain <span class="neon">Rush</span></div>
+        </div><button class="icon-btn" (click)="go('/settings')"
+          [attr.aria-label]="'common.settings' | translate"><ion-icon name="settings"></ion-icon></button>
+      </header>
+      <div class="stat-row">
+        <div class="card stat"><small>{{'common.coins' | translate}}</small><strong>🪙 {{game.coins | number}}</strong>
+        </div>
+        <div class="card stat"><small>{{'common.totalScore' | translate}}</small><strong>{{game.totalScore |
+            number}}</strong></div>
+        <div class="card stat"><small>{{'common.best' | translate}}</small><strong>{{game.bestScore | number}}</strong>
+        </div>
+      </div>
+      <section class="hero card">
+        <div class="hero-copy"><span class="pill"><ion-icon name="timer"></ion-icon> {{'home.tag' | translate}}</span>
+          <h1>{{'home.headline1' | translate}}<br><span>{{'home.headline2' | translate}}</span></h1>
+          <p>{{'home.subtitle' | translate}}</p><button class="btn primary"
+            (click)="playLevel('math', game.getLevelProgress('math').unlocked)"><ion-icon name="play"></ion-icon>
+            {{'common.playNow' | translate}}</button>
+        </div>
+        <div class="hero-brain">🧠</div>
+      </section>
+      <div class="section-title">
+        <h2>{{'home.gameModes' | translate}}</h2><span class="label">{{'home.challenges' | translate}}</span>
+      </div>
+      <section class="grid2">
+        <article *ngFor="let m of modes" class="card game-card">
+          <div>
+            <div class="game-icon">{{m.icon}}</div>
+            <h3>{{m.nameKey | translate}}</h3>
+            <p>{{m.descKey | translate}}</p>
+          </div>
+
+          <div class="level-heading">
+            <span>{{'levels.title' | translate}}
+              {{visibleLevels(m.id)[0]}}–{{visibleLevels(m.id)[visibleLevels(m.id).length - 1]}}</span>
+            <b>🪙 +{{game.levelReward}}</b>
+          </div>
+
+          <div class="level-row" aria-label="Visible game levels">
+            <button *ngFor="let level of visibleLevels(m.id)" type="button" class="level-btn"
+              [class.unlocked]="isUnlocked(m.id, level)" [class.completed]="isCompleted(m.id, level)"
+              [disabled]="!isUnlocked(m.id, level)" (click)="playLevel(m.id, level)"
+              [attr.aria-label]="levelTitle(level)">
+              <span class="level-number">{{level}}</span>
+              <ion-icon *ngIf="!isUnlocked(m.id, level)" name="lock-closed"></ion-icon>
+              <ion-icon *ngIf="isCompleted(m.id, level)" name="checkmark-circle"></ion-icon>
+            </button>
+          </div>
+
+          <small class="level-hint">
+            {{'levels.completeForCoins' | translate}}
+          </small>
+        </article>
+      </section>
+
+      <section class="reward-video-card card">
+        <div class="reward-video-copy">
+          <span class="pill">🎁 {{'home.rewardVideo' | translate}}</span>
+          <h3>{{'home.watchEarn' | translate}}</h3>
+          <p>{{'home.watchEarnDesc' | translate}}</p>
+        </div>
+        <div class="reward-video-action">
+          <div class="reward-balance">🪙 <strong>{{game.coins | number}}</strong></div>
+          <button class="btn primary reward-btn" [class.cooldown]="!game.rewardAdAvailable"
+            [disabled]="!game.rewardAdAvailable" (click)="openRewardVideo()">
+            <ion-icon name="play-circle"></ion-icon>
+            {{game.rewardAdAvailable ? ('home.watchVideo' | translate) : rewardCooldownText}}
+          </button>
+        </div>
+      </section>
+
+      <div class="reward-video-modal" *ngIf="rewardVideoOpen" role="dialog" aria-modal="true">
+        <div class="reward-video-backdrop" (click)="closeRewardVideo()"></div>
+        <section class="reward-video-dialog">
+          <button class="reward-close" type="button" (click)="closeRewardVideo()" aria-label="Close">
+            <ion-icon name="close-circle"></ion-icon>
+          </button>
+          <span class="pill">🎁 {{'home.rewardVideo' | translate}}</span>
+          <h2>{{'home.watchEarn' | translate}}</h2>
+          <p>{{'home.videoCompletion' | translate}}</p>
+          <video class="reward-video" autoplay playsinline preload="auto" controlslist="nodownload noplaybackrate"
+            (ended)="onRewardVideoEnded()" src="assets/reward-demo.mp4"></video>
+          <div class="reward-video-footer">🪙 +{{game.rewardAdCoins}} {{'common.coins' | translate}}</div>
+        </section>
+      </div>
+
+
+      <section class="section-title">
+        <h2>{{'home.daily' | translate}}</h2><button class="section-link" (click)="go('/daily-challenge')"><ion-icon
+            name="calendar"></ion-icon></button>
+      </section>
+      <article class="card daily" (click)="go('/daily-challenge')">
+        <div><span class="pill">{{'home.dailyMission' | translate}}</span>
+          <h3>{{'home.dailyScore' | translate}}</h3>
+          <div class="progress"><i [style.width.%]="game.dailyProgress"></i></div><small>{{game.daily.score | number}} /
+            {{game.daily.target | number}} {{'common.score' | translate}} · {{'home.dailyReward' | translate}}</small>
+        </div>
+        <div class="reward">🪙 <b>{{game.dailyReward}}</b><span>{{'common.reward' | translate}}</span></div>
+      </article>
+      <section class="section-title">
+        <h2>{{'home.progress' | translate}}</h2>
+      </section>
+      <article class="card progress-card">
+        <div class="p-head"><span>{{'common.totalScore' | translate}}</span><b>{{game.totalScore | number}}
+            {{'common.score' | translate}}</b></div>
+        <div class="progress"><i [style.width.%]="scoreProgress"></i></div>
+        <div class="progress-foot"><span>🔥 {{game.streak}} {{'home.streak' | translate}}</span><span>🏆
+            {{game.gamesPlayed}} {{'home.games' | translate}}</span></div>
+      </article>
+      <nav class="bottom-nav"><button class="nav-item active" (click)="go('/home')"><ion-icon
+            name="home"></ion-icon>{{'common.home' | translate}}</button><button class="nav-item"
+          (click)="go('/game')"><ion-icon name="game-controller"></ion-icon>{{'common.play' |
+          translate}}</button><button class="nav-item" (click)="go('/leaderboard')"><ion-icon
+            name="podium"></ion-icon>{{'common.ranks' | translate}}</button><button class="nav-item"
+          (click)="go('/profile')"><ion-icon name="person-circle"></ion-icon>{{'common.profile' | translate}}</button>
+      </nav>
+    </div>
+  </main>
+</ion-content>

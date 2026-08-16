@@ -1,0 +1,12 @@
+Brain Rush build status
+========================
+Source validation: PASSED
+- Withdraw UI exists only on Profile page.
+- Settings withdraw UI and handlers removed.
+- Daily challenge calendar uses the device's current local date.
+- Lazy routes retained; idle preloading added for faster subsequent navigation.
+- Async Angular animations enabled to reduce initial bundle work.
+- Production optimization/source maps disabled for production output.
+Angular production build: NOT RUN in this environment.
+Reason: npm registry dependencies were unavailable/incomplete in the build container; `npm ci --offline` failed because zone.js was not cached.
+Run locally: npm ci && npm run build

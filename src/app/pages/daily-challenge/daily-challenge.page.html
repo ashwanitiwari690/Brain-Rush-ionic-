@@ -1,0 +1,41 @@
+<ion-content [fullscreen]="true">
+    <main class="page">
+        <div class="shell">
+            <header class="topbar"><button class="icon-btn" (click)="go('/home')"><ion-icon
+                        name="arrow-back"></ion-icon></button>
+                <div class="title">{{'daily.title' | translate}}</div><ion-icon></ion-icon>
+            </header>
+            <section class="daily-hero card">
+                <div class="calendar-icon" aria-label="Today">
+                    <span>{{ todayMonth }}</span>
+                    <strong>{{ todayDay }}</strong>
+                </div><span class="pill">{{'daily.mission' | translate}}</span>
+                <h1>{{ 'daily.score' | translate:{value:game.daily.target} }}</h1>
+                <p>{{'daily.description' | translate}}</p>
+                <div class="progress"><i [style.width.%]="game.dailyProgress"></i></div>
+                <div class="numbers"><span>{{game.daily.score | number}} / {{game.daily.target |
+                        number}}</span><b>{{game.dailyProgress}}%</b></div>
+            </section>
+            <section class="reward-card card">
+                <div><small>{{'daily.completionReward' | translate}}</small>
+                    <h2>🪙 {{game.dailyReward}} + ⭐ 250 XP</h2>
+                    <p *ngIf="game.daily.rewardClaimed" class="claimed"><ion-icon name="checkmark-circle"></ion-icon>
+                        {{'daily.rewardClaimed' | translate}}</p>
+                </div><ion-icon name="trophy"></ion-icon>
+            </section>
+            <section class="card challenge-info">
+                <div><span class="label">{{'daily.currentStreak' | translate}}</span><strong>🔥 {{game.streak}}
+                        {{'home.streak' | translate}}</strong></div>
+                <div><span class="label">{{'daily.remaining' | translate}}</span><strong>{{game.dailyRemaining |
+                        number}} PTS</strong></div>
+            </section>
+
+            
+
+            <button class="btn primary" [disabled]="!game.dailyAvailable" (click)="start()"><ion-icon
+                    [name]="game.daily.completed ? 'checkmark-circle' : 'play'"></ion-icon>{{game.daily.completed ?
+                ('daily.complete' | translate) : ('daily.start' | translate)}}</button>
+            <p class="daily-note">{{'daily.note' | translate}}</p>
+        </div>
+    </main>
+</ion-content>
