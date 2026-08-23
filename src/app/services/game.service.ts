@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { REWARD_CONFIG } from '../config/reward.config';
 
 export type GameModeId = 'math' | 'reaction' | 'memory' | 'color' | 'sequence' | 'quick';
 export type GameLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
@@ -143,6 +144,7 @@ export class GameService {
     this.load();
   }
 
+  get minRedeemCoins(): number { return REWARD_CONFIG.minRedeemCoins; }
   get levelReward(): number { return LEVEL_REWARD; }
   get dailyTarget(): number { return DAILY_TARGET; }
   get dailyReward(): number { return DAILY_REWARD; }
@@ -465,6 +467,18 @@ export class GameService {
     this.rewardAdNextAvailableAt = Date.now() + REWARD_AD_COOLDOWN_MS;
     this.save();
     return true;
+  }
+
+  /**
+   * Deducts coins locally only after the Central Game Reward API has confirmed
+   * a redemption. `coinsRedeemed` must come from that backend response, never
+   * from a locally-computed guess, and is clamped to the current balance so a
+   * malformed response can never drive coins negative.
+   */
+  confirmRedemption(coinsRedeemed: number): void {
+    const safeAmount = Math.max(0, Math.min(this._coins, Math.floor(coinsRedeemed) || 0));
+    this._coins -= safeAmount;
+    this.save();
   }
 
   updateProfile(profile: PlayerProfile): void {
