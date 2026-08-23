@@ -58,7 +58,11 @@ const translations: Record<AppLanguage, Record<string, string>> = {
     'settings.app': 'APP', 'settings.about': 'About Brain Rush', 'settings.aboutDesc': '60-second brain training challenges', 'settings.version': 'Version', 'settings.versionDesc': 'Mobile-ready Ionic build',
     'settings.language': 'LANGUAGE', 'settings.languageDesc': 'Choose your preferred app language', 'settings.english': 'English', 'settings.hindi': 'हिन्दी',
     'settings.resetConfirm': 'Reset gameplay progress? Your coins will be kept.',
-    'settings.withdraw': 'WITHDRAW', 'settings.withdrawTitle': 'Withdraw coins', 'settings.withdrawDesc': 'Enter your 10-digit number to continue.', 'settings.withdrawNumber': '10-DIGIT NUMBER', 'settings.withdrawButton': 'WITHDRAW', 'settings.withdrawReady': 'Withdrawal UI is ready. API integration can be connected later.',
+    'settings.withdraw': 'WITHDRAW', 'settings.withdrawTitle': 'Withdraw coins', 'settings.withdrawDesc': 'Enter the 10-digit mobile number registered on your Earnivo account.', 'settings.withdrawNumber': '10-DIGIT NUMBER', 'settings.withdrawButton': 'WITHDRAW', 'settings.withdrawReady': 'Withdrawal UI is ready. API integration can be connected later.',
+    'settings.withdrawMinimum': 'Reach {{min}} coins to unlock withdrawals.', 'settings.withdrawLoading': 'PROCESSING…',
+    'settings.withdrawSuccess': 'Redemption successful', 'settings.withdrawSuccessDesc': '{{coins}} coins converted to ₹{{rupees}}. Your balance has been updated.',
+    'settings.withdrawError': 'Redemption failed. Your coins are safe — please try again.',
+    'settings.withdrawDuplicate': 'This redemption was already processed by the server. Your coins are safe; refresh your balance or contact support if it looks wrong.',
     'welcome.new': 'NEW CHALLENGE', 'welcome.language': 'LANGUAGE', 'welcome.sound': 'SOUND', 'welcome.music': 'MUSIC', 'common.on': 'ON', 'common.off': 'OFF', 'welcome.tag': '60 SECOND CHALLENGE', 'welcome.title1': 'TRAIN YOUR BRAIN.', 'welcome.title2': 'BEAT YOUR BEST.',
     'welcome.desc': 'Fast challenges. Bigger combos. One minute to prove how quick your mind can be.', 'welcome.how': 'HOW IT WORKS', 'welcome.rush': '60 SEC RUSH', 'welcome.ranks': 'CLIMB THE RANKS'
   },
@@ -117,7 +121,11 @@ const translations: Record<AppLanguage, Record<string, string>> = {
     'settings.app': 'ऐप', 'settings.about': 'ब्रेन रश के बारे में', 'settings.aboutDesc': '60 सेकंड के ब्रेन ट्रेनिंग चैलेंज', 'settings.version': 'वर्ज़न', 'settings.versionDesc': 'मोबाइल के लिए तैयार Ionic बिल्ड',
     'settings.language': 'भाषा', 'settings.languageDesc': 'ऐप की पसंदीदा भाषा चुनें', 'settings.english': 'English', 'settings.hindi': 'हिन्दी',
     'settings.resetConfirm': 'क्या आप गेम की प्रगति रीसेट करना चाहते हैं? आपके कॉइन्स सुरक्षित रहेंगे।',
-    'settings.withdraw': 'निकासी', 'settings.withdrawTitle': 'कॉइन निकालें', 'settings.withdrawDesc': 'जारी रखने के लिए अपना 10 अंकों का नंबर दर्ज करें।', 'settings.withdrawNumber': '10 अंकों का नंबर', 'settings.withdrawButton': 'निकासी करें', 'settings.withdrawReady': 'निकासी UI तैयार है। API को बाद में जोड़ा जा सकता है।',
+    'settings.withdraw': 'निकासी', 'settings.withdrawTitle': 'कॉइन निकालें', 'settings.withdrawDesc': 'अपने Earnivo खाते में पंजीकृत 10 अंकों का मोबाइल नंबर दर्ज करें।', 'settings.withdrawNumber': '10 अंकों का नंबर', 'settings.withdrawButton': 'निकासी करें', 'settings.withdrawReady': 'निकासी UI तैयार है। API को बाद में जोड़ा जा सकता है।',
+    'settings.withdrawMinimum': 'निकासी अनलॉक करने के लिए {{min}} कॉइन्स तक पहुंचें।', 'settings.withdrawLoading': 'प्रोसेस हो रहा है…',
+    'settings.withdrawSuccess': 'निकासी सफल रही', 'settings.withdrawSuccessDesc': '{{coins}} कॉइन्स ₹{{rupees}} में बदले गए। आपका बैलेंस अपडेट हो गया है।',
+    'settings.withdrawError': 'निकासी विफल रही। आपके कॉइन्स सुरक्षित हैं — कृपया दोबारा कोशिश करें।',
+    'settings.withdrawDuplicate': 'यह निकासी सर्वर द्वारा पहले ही प्रोसेस की जा चुकी है। आपके कॉइन्स सुरक्षित हैं; अपना बैलेंस रीफ्रेश करें या गड़बड़ी लगे तो सहायता से संपर्क करें।',
     'welcome.new': 'नया चैलेंज', 'welcome.language': 'भाषा', 'welcome.sound': 'साउंड', 'welcome.music': 'म्यूज़िक', 'common.on': 'चालू', 'common.off': 'बंद', 'welcome.tag': '60 सेकंड चैलेंज', 'welcome.title1': 'अपने दिमाग को ट्रेन करें।', 'welcome.title2': 'अपना रिकॉर्ड तोड़ें।',
     'welcome.desc': 'तेज़ चैलेंज। बड़े कॉम्बो। सिर्फ एक मिनट में अपनी सोच की गति साबित करें।', 'welcome.how': 'कैसे खेलें', 'welcome.rush': '60 सेकंड रश', 'welcome.ranks': 'रैंकिंग में ऊपर जाएं'
   }

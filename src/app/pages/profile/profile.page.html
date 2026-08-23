@@ -64,7 +64,7 @@
                             name="checkmark"></ion-icon>{{'common.save' | translate}} {{'profile.title' |
                         translate}}</button></div>
             </section>
-            @if (canWithdraw) {
+            @if (canWithdraw || redeemState !== 'idle') {
             <section class="card profile-withdraw">
                 <div class="withdraw-head">
                     <div class="withdraw-icon">🪙</div>
@@ -74,17 +74,52 @@
                     </div>
                     <strong>{{game.coins | number}} {{ 'common.coins' | translate }}</strong>
                 </div>
+
+                @if (redeemState === 'success' && redeemResult) {
+                <div class="withdraw-status success">
+                    <ion-icon name="checkmark"></ion-icon>
+                    <div>
+                        <b>{{ 'settings.withdrawSuccess' | translate }}</b>
+                        <small>{{ 'settings.withdrawSuccessDesc' | translate:{ coins: redeemResult.coins, rupees: redeemResult.rupees } }}</small>
+                    </div>
+                </div>
+                <button type="button" class="withdraw-btn" (click)="dismissRedeemResult()">{{ 'common.save' | translate }}</button>
+                } @else {
                 <label class="withdraw-label" for="profile-withdraw-number">
                     {{ 'settings.withdrawNumber' | translate }}
                 </label>
                 <input id="profile-withdraw-number" class="withdraw-input" type="tel" inputmode="numeric"
                     autocomplete="tel" maxlength="10" placeholder="Enter 10 digit number"
-                    [value]="withdrawNumber" (input)="onWithdrawNumberInput($event)">
-                <button type="button" class="withdraw-btn" [disabled]="!withdrawNumberValid"
-                    (click)="withdraw()">{{ 'settings.withdrawButton' | translate }}</button>
-                @if (withdrawMessage) {
-                    <small class="withdraw-message">{{ withdrawMessage }}</small>
+                    [value]="withdrawNumber" [disabled]="isRedeeming" (input)="onWithdrawNumberInput($event)">
+                <button type="button" class="withdraw-btn" [disabled]="!withdrawNumberValid || isRedeeming || isBlockedByDuplicate"
+                    (click)="withdraw()">
+                    @if (isRedeeming) {
+                        {{ 'settings.withdrawLoading' | translate }}
+                    } @else {
+                        {{ 'settings.withdrawButton' | translate }}
+                    }
+                </button>
+                @if (redeemState === 'error') {
+                    <small class="withdraw-message error">
+                        @if (redeemErrorCode === 'DUPLICATE_CONVERSION') {
+                            {{ 'settings.withdrawDuplicate' | translate }}
+                        } @else {
+                            {{ withdrawMessage || ('settings.withdrawError' | translate) }}
+                        }
+                    </small>
                 }
+                }
+            </section>
+            } @else {
+            <section class="card profile-withdraw">
+                <div class="withdraw-head">
+                    <div class="withdraw-icon">🪙</div>
+                    <div>
+                        <b>{{ 'settings.withdrawTitle' | translate }}</b>
+                        <small>{{ 'settings.withdrawMinimum' | translate:{ min: game.minRedeemCoins } }}</small>
+                    </div>
+                    <strong>{{game.coins | number}} / {{game.minRedeemCoins | number}}</strong>
+                </div>
             </section>
             }
             <nav class="bottom-nav"><button class="nav-item" (click)="go('/home')"><ion-icon
