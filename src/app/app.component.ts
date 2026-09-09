@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { AudioService } from './services/audio.service';
+import { AppVerificationService } from './services/app-verification.service';
 
 @Component({
   selector: 'app-root',
@@ -16,9 +17,14 @@ export class AppComponent implements OnInit, OnDestroy {
     window.removeEventListener('keydown', this.firstInteraction);
   };
 
-  constructor(private audio: AudioService) {}
+  constructor(private audio: AudioService, private appVerification: AppVerificationService) {}
 
   ngOnInit(): void {
+    // Fire-and-forget: confirms this device's App Promotion install to
+    // Earnivo so a pending reward (if any) gets credited. Harmless no-op
+    // otherwise — see APP_PROMOTION_VERIFICATION_INTEGRATION.md.
+    void this.appVerification.confirmAppPromotion();
+
     // Try immediately for native/webviews where autoplay is permitted.
     if (this.audio.musicEnabled) {
       this.audio.startMusic();
