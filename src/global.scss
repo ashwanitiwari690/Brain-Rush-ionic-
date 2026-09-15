@@ -349,6 +349,15 @@ ion-content::part(scroll)::-webkit-scrollbar {
 .bottom-nav {
     margin-bottom: env(safe-area-inset-bottom)
 }
+.ad-error {
+    display: block;
+    margin-top: 8px;
+    color: var(--red);
+    font-size: 11px;
+    line-height: 1.4;
+    text-align: center
+}
+
 /* Mobile/WebView performance: avoid expensive backdrop blur on every card. */
 .card {
     -webkit-backdrop-filter: none;

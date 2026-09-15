@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { GameLevel, GameModeId, GameService } from '../../services/game.service';
+import { RewardAdService } from '../../services/reward-ad.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { addIcons } from 'ionicons';
@@ -26,10 +27,16 @@ export class HomePage implements OnInit, OnDestroy {
   ];
 
   rewardVideoOpen = false;
+  isWatchingNativeAd = false;
+  adErrorMessage = '';
   private rewardRefreshId?: ReturnType<typeof setInterval>;
-  private rewardTick = 0;
 
-  constructor(public game: GameService, private router: Router, public language: LanguageService) {
+  constructor(
+    public game: GameService,
+    private router: Router,
+    public language: LanguageService,
+    public rewardAd: RewardAdService
+  ) {
     addIcons({
       settings, gameController, home, podium, personCircle, play, calendar, timer,
       lockClosed, checkmarkCircle, playCircle, closeCircle, gift
@@ -37,11 +44,31 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.rewardRefreshId = setInterval(() => { this.rewardTick++; }, 1000);
+    this.startCooldownTickerIfNeeded();
   }
 
   ngOnDestroy(): void {
+    this.stopCooldownTicker();
+  }
+
+  /**
+   * The reward-video cooldown text ("1h 59m", "58s"...) is a getter computed
+   * from Date.now(), so it only refreshes on screen when change detection
+   * runs. This ticks CD once a second, but only while a cooldown is actually
+   * counting down — not for the component's entire lifetime — so idle time
+   * (cooldown already expired, or never started) doesn't burn a per-second
+   * app-wide change-detection pass for no visible reason.
+   */
+  private startCooldownTickerIfNeeded(): void {
+    if (this.rewardRefreshId || this.game.rewardAdAvailable) return;
+    this.rewardRefreshId = setInterval(() => {
+      if (this.game.rewardAdAvailable) this.stopCooldownTicker();
+    }, 1000);
+  }
+
+  private stopCooldownTicker(): void {
     if (this.rewardRefreshId) clearInterval(this.rewardRefreshId);
+    this.rewardRefreshId = undefined;
   }
 
   go(path: string): void { this.router.navigateByUrl(path); }
@@ -77,8 +104,28 @@ export class HomePage implements OnInit, OnDestroy {
     return `${seconds}s`;
   }
 
-  openRewardVideo(): void {
-    if (this.game.rewardAdAvailable) this.rewardVideoOpen = true;
+  async openRewardVideo(): Promise<void> {
+    if (!this.game.rewardAdAvailable || this.isWatchingNativeAd) return;
+    this.adErrorMessage = '';
+
+    if (this.rewardAd.usesNativeAds) {
+      // Native: the real full-screen AdMob ad takes over the screen, so no
+      // local modal is shown — only a brief loading state on the button.
+      this.isWatchingNativeAd = true;
+      const granted = await this.rewardAd.watch();
+      this.isWatchingNativeAd = false;
+      if (granted) {
+        this.game.claimRewardAdReward();
+        this.startCooldownTickerIfNeeded();
+      } else {
+        this.adErrorMessage = this.language.t('common.adUnavailable');
+      }
+      return;
+    }
+
+    // Web/dev fallback: a local simulated video so the reward flow can be
+    // tested without a device. Never runs on native.
+    this.rewardVideoOpen = true;
   }
 
   closeRewardVideo(): void {
@@ -88,6 +135,7 @@ export class HomePage implements OnInit, OnDestroy {
   onRewardVideoEnded(): void {
     if (this.game.claimRewardAdReward()) {
       this.rewardVideoOpen = false;
+      this.startCooldownTickerIfNeeded();
     }
   }
 

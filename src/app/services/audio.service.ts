@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class AudioService {
@@ -18,7 +18,7 @@ export class AudioService {
   private musicTimer?: ReturnType<typeof setInterval>;
   private musicStep = 0;
 
-  constructor() {
+  constructor(private zone: NgZone) {
     try {
       const saved = JSON.parse(localStorage.getItem('brain-rush-audio') || '{}');
       this.soundEnabled = saved.sound ?? true;
@@ -117,7 +117,12 @@ export class AudioService {
 
   correct() {
     this.tone(740, 0.10, 'sine', 0.22);
-    setTimeout(() => this.tone(980, 0.14, 'sine', 0.18), 45);
+    // Deferred tone only, no Angular state involved — keep it out of the zone
+    // so it doesn't schedule an extra change-detection pass on every correct
+    // answer (which, in fast gameplay, can be many times per second).
+    this.zone.runOutsideAngular(() => {
+      setTimeout(() => this.tone(980, 0.14, 'sine', 0.18), 45);
+    });
     this.haptic(12);
   }
 
@@ -128,16 +133,20 @@ export class AudioService {
   }
 
   success() {
-    [660, 830, 1040, 1320].forEach((f, i) =>
-      setTimeout(() => this.tone(f, 0.16, 'sine', 0.17), i * 65)
-    );
+    this.zone.runOutsideAngular(() => {
+      [660, 830, 1040, 1320].forEach((f, i) =>
+        setTimeout(() => this.tone(f, 0.16, 'sine', 0.17), i * 65)
+      );
+    });
     this.haptic([15, 20, 15]);
   }
 
   gameOver() {
-    [440, 330, 220].forEach((f, i) =>
-      setTimeout(() => this.tone(f, 0.2, 'triangle', 0.14), i * 90)
-    );
+    this.zone.runOutsideAngular(() => {
+      [440, 330, 220].forEach((f, i) =>
+        setTimeout(() => this.tone(f, 0.2, 'triangle', 0.14), i * 90)
+      );
+    });
   }
 
   haptic(pattern: number | number[] = 10) {
@@ -258,7 +267,14 @@ export class AudioService {
     };
 
     tick();
-    this.musicTimer = setInterval(tick, 390);
+    // The music loop only schedules Web Audio oscillators — it never touches
+    // any Angular-bound state, so it doesn't need to run inside Angular's
+    // zone. Left in-zone, this setInterval would trigger a full app-wide
+    // change-detection pass roughly 2.5 times per second for as long as
+    // music is enabled (i.e. almost the entire time the app is open).
+    this.zone.runOutsideAngular(() => {
+      this.musicTimer = setInterval(tick, 390);
+    });
   }
 
   stopMusic() {

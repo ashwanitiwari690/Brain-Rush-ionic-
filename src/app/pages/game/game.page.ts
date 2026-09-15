@@ -4,10 +4,12 @@ import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
-  arrowBack, timer, heart, flame, play, flash, calculator
+  arrowBack, timer, heart, flame, play, flash, calculator, playCircle
 } from 'ionicons/icons';
 import { GameLevel, GameModeId, GameService } from '../../services/game.service';
 import { AudioService } from '../../services/audio.service';
+import { AdmobService } from '../../services/admob.service';
+import { RewardAdService } from '../../services/reward-ad.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 
@@ -60,15 +62,26 @@ export class GamePage implements OnInit, OnDestroy {
   private reactionTimeout?: ReturnType<typeof setTimeout>;
   private memoryTimeout?: ReturnType<typeof setTimeout>;
 
+  /** One "watch ad to continue" offer per game session, so it can't be farmed for infinite lives. */
+  continueOffered = false;
+  continueUsed = false;
+  isWatchingContinueAd = false;
+  continueAdError = false;
+
+  /** True while the pre-round interstitial is loading/showing, gating the "Start Challenge" tap. */
+  startingChallenge = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     public game: GameService,
     private audio: AudioService,
+    private admob: AdmobService,
+    private rewardAd: RewardAdService,
     public language: LanguageService
   ) {
     addIcons({
-      arrowBack, timer, heart, flame, play, flash, calculator
+      arrowBack, timer, heart, flame, play, flash, calculator, playCircle
     });
   }
 
@@ -115,7 +128,22 @@ export class GamePage implements OnInit, OnDestroy {
   get timeLimit(): number { return Math.max(35, 60 - (this.level - 1) * 3); }
   get startingLives(): number { return this.level >= 9 ? 2 : 3; }
 
-  start(): void {
+  /**
+   * Shows a full-screen interstitial before every round starts, then begins
+   * play once it's dismissed (or immediately if no ad was available/ready —
+   * see AdmobService.showInterstitial's ~4s timeout). The button is disabled
+   * for the duration so a slow ad load can't be double-tapped.
+   */
+  async start(): Promise<void> {
+    if (this.startingChallenge) return;
+    this.startingChallenge = true;
+    this.audio.click();
+    await this.admob.showInterstitial();
+    this.startingChallenge = false;
+    this.beginRound();
+  }
+
+  private beginRound(): void {
     this.started = true;
     this.time = this.timeLimit;
     this.score = 0;
@@ -124,8 +152,10 @@ export class GamePage implements OnInit, OnDestroy {
     this.correct = 0;
     this.answered = 0;
     this.difficulty = this.level;
+    this.continueOffered = false;
+    this.continueUsed = false;
+    this.continueAdError = false;
     this.clearTimers();
-    this.audio.click();
     this.audio.startMusic();
     this.nextRound();
     this.startTimer();
@@ -134,7 +164,7 @@ export class GamePage implements OnInit, OnDestroy {
   private startTimer(): void {
     this.timerId = setInterval(() => {
       this.time--;
-      if (this.time <= 0) this.endGame('time');
+      if (this.time <= 0) void this.endGame('time');
     }, 1000);
   }
 
@@ -418,7 +448,7 @@ export class GamePage implements OnInit, OnDestroy {
       this.lives--;
       this.combo = 0;
       this.audio.wrong();
-      if (this.lives <= 0) this.endGame('lives');
+      if (this.lives <= 0) this.handleLivesDepleted();
       return;
     }
 
@@ -440,10 +470,50 @@ export class GamePage implements OnInit, OnDestroy {
     this.lives--;
     this.combo = 0;
     this.audio.wrong();
-    if (this.lives <= 0) this.endGame('lives');
+    if (this.lives <= 0) this.handleLivesDepleted();
   }
 
-  endGame(reason: 'time' | 'lives' = 'time'): void {
+  /**
+   * Pauses the round instead of ending it immediately so the player can
+   * offer a rewarded ad in exchange for one extra life. Limited to once per
+   * game session (continueUsed) so it can't be farmed for endless retries.
+   */
+  private handleLivesDepleted(): void {
+    if (this.continueUsed) {
+      void this.endGame('lives');
+      return;
+    }
+    this.started = false;
+    this.clearTimers();
+    this.audio.stopMusic();
+    this.continueOffered = true;
+  }
+
+  async watchAdForContinue(): Promise<void> {
+    if (this.isWatchingContinueAd) return;
+    this.continueAdError = false;
+    this.isWatchingContinueAd = true;
+    const granted = await this.rewardAd.watch();
+    this.isWatchingContinueAd = false;
+    if (!granted) {
+      this.continueAdError = true;
+      return;
+    }
+    this.continueUsed = true;
+    this.continueOffered = false;
+    this.lives = 1;
+    this.started = true;
+    this.audio.startMusic();
+    this.startTimer();
+    this.nextRound();
+  }
+
+  declineContinue(): void {
+    this.continueOffered = false;
+    void this.endGame('lives');
+  }
+
+  async endGame(reason: 'time' | 'lives' = 'time'): Promise<void> {
     if (!this.started) return;
     this.started = false;
     this.clearTimers();
@@ -460,6 +530,10 @@ export class GamePage implements OnInit, OnDestroy {
     const levelCompleted = reason === 'time' && this.answered >= 8 && accuracy >= 50;
     this.game.completeGame(this.score, accuracy, this.combo, modeName, this.daily, this.mode as GameModeId, this.level, levelCompleted);
     if (this.game.level > previousLevel) this.audio.success();
+
+    // Natural breakpoint: leaving a finished round. Frequency-capped inside
+    // AdmobService so this doesn't show on every single round.
+    await this.admob.maybeShowInterstitialAtBreakpoint();
     this.router.navigateByUrl('/result');
   }
 
@@ -473,8 +547,12 @@ export class GamePage implements OnInit, OnDestroy {
   }
 
   back(): void {
+    if (this.continueOffered) {
+      this.declineContinue();
+      return;
+    }
     if (this.started) {
-      this.endGame('lives');
+      void this.endGame('lives');
       return;
     }
     this.router.navigateByUrl('/home');
