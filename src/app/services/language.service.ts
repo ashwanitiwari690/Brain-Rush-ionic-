@@ -64,7 +64,13 @@ const translations: Record<AppLanguage, Record<string, string>> = {
     'settings.withdrawError': 'Redemption failed. Your coins are safe — please try again.',
     'settings.withdrawDuplicate': 'This redemption was already processed by the server. Your coins are safe; refresh your balance or contact support if it looks wrong.',
     'welcome.new': 'NEW CHALLENGE', 'welcome.language': 'LANGUAGE', 'welcome.sound': 'SOUND', 'welcome.music': 'MUSIC', 'common.on': 'ON', 'common.off': 'OFF', 'welcome.tag': '60 SECOND CHALLENGE', 'welcome.title1': 'TRAIN YOUR BRAIN.', 'welcome.title2': 'BEAT YOUR BEST.',
-    'welcome.desc': 'Fast challenges. Bigger combos. One minute to prove how quick your mind can be.', 'welcome.how': 'HOW IT WORKS', 'welcome.rush': '60 SEC RUSH', 'welcome.ranks': 'CLIMB THE RANKS'
+    'welcome.desc': 'Fast challenges. Bigger combos. One minute to prove how quick your mind can be.', 'welcome.how': 'HOW IT WORKS', 'welcome.rush': '60 SEC RUSH', 'welcome.ranks': 'CLIMB THE RANKS',
+    'common.adLoading': 'LOADING AD…', 'common.adUnavailable': 'Ad not available right now. Please try again in a moment.',
+    'result.doubleCoins': 'WATCH AD TO DOUBLE COINS', 'result.doubleCoinsDesc': 'Watch a short video to double the coins you just earned.', 'result.coinsDoubled': 'Coins doubled! 🎉',
+    'daily.doubleReward': 'WATCH AD TO DOUBLE REWARD', 'daily.doubleRewardDesc': 'Watch a short video to double today\'s completion reward.', 'daily.rewardDoubled': 'Reward doubled today! 🎉',
+    'achievements.claim': 'WATCH AD TO CLAIM', 'achievements.claimed': 'CLAIMED',
+    'game.continueTitle': 'OUT OF LIVES', 'game.continueDesc': 'Watch a short video to get one extra life and keep your current score and combo.',
+    'game.continueWatch': 'WATCH AD TO CONTINUE', 'game.continueDecline': 'END RUN'
   },
   hi: {
     'common.home': 'होम', 'common.play': 'खेलें', 'common.ranks': 'रैंक', 'common.profile': 'प्रोफ़ाइल',
@@ -127,7 +133,13 @@ const translations: Record<AppLanguage, Record<string, string>> = {
     'settings.withdrawError': 'निकासी विफल रही। आपके कॉइन्स सुरक्षित हैं — कृपया दोबारा कोशिश करें।',
     'settings.withdrawDuplicate': 'यह निकासी सर्वर द्वारा पहले ही प्रोसेस की जा चुकी है। आपके कॉइन्स सुरक्षित हैं; अपना बैलेंस रीफ्रेश करें या गड़बड़ी लगे तो सहायता से संपर्क करें।',
     'welcome.new': 'नया चैलेंज', 'welcome.language': 'भाषा', 'welcome.sound': 'साउंड', 'welcome.music': 'म्यूज़िक', 'common.on': 'चालू', 'common.off': 'बंद', 'welcome.tag': '60 सेकंड चैलेंज', 'welcome.title1': 'अपने दिमाग को ट्रेन करें।', 'welcome.title2': 'अपना रिकॉर्ड तोड़ें।',
-    'welcome.desc': 'तेज़ चैलेंज। बड़े कॉम्बो। सिर्फ एक मिनट में अपनी सोच की गति साबित करें।', 'welcome.how': 'कैसे खेलें', 'welcome.rush': '60 सेकंड रश', 'welcome.ranks': 'रैंकिंग में ऊपर जाएं'
+    'welcome.desc': 'तेज़ चैलेंज। बड़े कॉम्बो। सिर्फ एक मिनट में अपनी सोच की गति साबित करें।', 'welcome.how': 'कैसे खेलें', 'welcome.rush': '60 सेकंड रश', 'welcome.ranks': 'रैंकिंग में ऊपर जाएं',
+    'common.adLoading': 'विज्ञापन लोड हो रहा है…', 'common.adUnavailable': 'अभी विज्ञापन उपलब्ध नहीं है। कृपया थोड़ी देर बाद पुनः प्रयास करें।',
+    'result.doubleCoins': 'कॉइन डबल करने के लिए विज्ञापन देखें', 'result.doubleCoinsDesc': 'अभी कमाए गए कॉइन डबल करने के लिए एक छोटा वीडियो देखें।', 'result.coinsDoubled': 'कॉइन डबल हो गए! 🎉',
+    'daily.doubleReward': 'इनाम डबल करने के लिए विज्ञापन देखें', 'daily.doubleRewardDesc': 'आज के पूरा करने के इनाम को डबल करने के लिए एक छोटा वीडियो देखें।', 'daily.rewardDoubled': 'आज का इनाम डबल हो गया! 🎉',
+    'achievements.claim': 'क्लेम करने के लिए विज्ञापन देखें', 'achievements.claimed': 'क्लेम किया गया',
+    'game.continueTitle': 'लाइफ़ खत्म', 'game.continueDesc': 'एक अतिरिक्त लाइफ़ पाने और अपना मौजूदा स्कोर व कॉम्बो बनाए रखने के लिए एक छोटा वीडियो देखें।',
+    'game.continueWatch': 'जारी रखने के लिए विज्ञापन देखें', 'game.continueDecline': 'रन समाप्त करें'
   }
 };
 

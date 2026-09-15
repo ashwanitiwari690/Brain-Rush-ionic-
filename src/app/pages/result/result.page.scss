@@ -131,3 +131,23 @@
     color: var(--green);
     font-size: 10px
 }
+
+.double-card {
+    margin-top: 12px;
+    padding: 16px;
+    text-align: center;
+    border-color: rgba(255, 215, 90, .38)
+}
+
+.double-card p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 12px
+}
+
+.doubled-msg {
+    margin: 0;
+    color: var(--gold);
+    font-weight: 900;
+    font-size: 13px
+}

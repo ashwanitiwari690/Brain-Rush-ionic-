@@ -68,12 +68,13 @@
         <div class="reward-video-action">
           <div class="reward-balance">🪙 <strong>{{game.coins | number}}</strong></div>
           <button class="btn primary reward-btn" [class.cooldown]="!game.rewardAdAvailable"
-            [disabled]="!game.rewardAdAvailable" (click)="openRewardVideo()">
+            [disabled]="!game.rewardAdAvailable || isWatchingNativeAd" (click)="openRewardVideo()">
             <ion-icon name="play-circle"></ion-icon>
-            {{game.rewardAdAvailable ? ('home.watchVideo' | translate) : rewardCooldownText}}
+            {{isWatchingNativeAd ? ('common.adLoading' | translate) : (game.rewardAdAvailable ? ('home.watchVideo' | translate) : rewardCooldownText)}}
           </button>
         </div>
       </section>
+      <small class="ad-error" *ngIf="adErrorMessage">{{adErrorMessage}}</small>
 
       <div class="reward-video-modal" *ngIf="rewardVideoOpen" role="dialog" aria-modal="true">
         <div class="reward-video-backdrop" (click)="closeRewardVideo()"></div>

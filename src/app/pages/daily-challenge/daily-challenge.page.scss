@@ -3,3 +3,7 @@
 .calendar-icon strong{flex:1;display:grid;place-items:center;font-size:64px;line-height:1;font-weight:900}.daily-hero h1{font-size:27px;margin:15px 0 7px}.daily-hero p{font-size:12px;color:var(--muted);line-height:1.5}.daily-hero .progress{margin-top:23px}.numbers{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;margin-top:7px}.numbers b{color:var(--cyan)}.reward-card{margin-top:12px;padding:18px;display:flex;justify-content:space-between;align-items:center}.reward-card small{color:var(--muted);font-size:9px}.reward-card h2{margin:6px 0 0;color:var(--gold);font-size:18px}.reward-card ion-icon{font-size:38px;color:var(--gold)}.challenge-info{margin:12px 0;padding:17px;display:grid;grid-template-columns:1fr 1fr;text-align:center}.challenge-info strong{display:block;margin-top:7px}
 
 .claimed{color:var(--green)!important;font-size:11px!important;display:flex;align-items:center;gap:5px}.daily-note{color:var(--muted);font-size:10px;line-height:1.5;text-align:center;margin:16px 12px}.btn:disabled{opacity:.5;filter:saturate(.5)}
+
+.double-reward-card{margin:12px 0;padding:16px;text-align:center;border-color:rgba(255,215,90,.38)}
+.double-reward-card p{margin:0 0 12px;color:var(--muted);font-size:12px}
+.double-reward-card .doubled-msg{margin:0;color:var(--gold);font-weight:900;font-size:13px}

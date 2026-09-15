@@ -32,6 +32,8 @@ export interface LastResult {
   scoreBonusCoins: number;
   dailyBonus: number;
   newBest: boolean;
+  /** Whether this round's coins were already doubled via the result-screen rewarded ad. */
+  coinsDoubled: boolean;
 }
 
 export interface PlayerProfile {
@@ -60,7 +62,12 @@ export interface DailyState {
   target: number;
   completed: boolean;
   rewardClaimed: boolean;
+  /** Whether today's completion reward was already doubled via a rewarded ad. */
+  bonusDoubled: boolean;
 }
+
+/** Achievement badges that can be claimed once each for coins via a rewarded ad. */
+export type AchievementKey = 'first' | 'streak' | 'speed' | 'legend' | 'perfect';
 
 const MODE_IDS: GameModeId[] = ['math', 'reaction', 'memory', 'color', 'sequence', 'quick'];
 const LEVELS: GameLevel[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -70,6 +77,7 @@ const DAILY_TARGET = 60000;
 const DAILY_REWARD = 30;
 const REWARD_AD_COINS = 100;
 const REWARD_AD_COOLDOWN_MS = 2 * 60 * 60 * 1000;
+const ACHIEVEMENT_REWARD_COINS = 50;
 const STATE_STORAGE_KEY = 'brain-rush-state';
 const STATE_VERSION = 2;
 
@@ -102,6 +110,8 @@ export class GameService {
   streak = 0;
   totalScore = 0;
   rewardAdNextAvailableAt = 0;
+  /** Achievement keys already claimed for coins via the rewarded ad on the Achievements page. */
+  claimedAchievements: AchievementKey[] = [];
 
   profile: PlayerProfile = {
     name: 'Pavel',
@@ -123,7 +133,8 @@ export class GameService {
     levelReward: 10,
     scoreBonusCoins: 0,
     dailyBonus: 0,
-    newBest: false
+    newBest: false,
+    coinsDoubled: false
   };
 
   history: GameHistory[] = [];
@@ -154,9 +165,16 @@ export class GameService {
   get rewardAdRemainingMs(): number { return Math.max(0, this.rewardAdNextAvailableAt - Date.now()); }
   get availableLevels(): GameLevel[] { return LEVELS; }
   get maxGameLevel(): number { return MAX_LEVEL; }
+  get achievementRewardCoins(): number { return ACHIEVEMENT_REWARD_COINS; }
+
+  /** Whether today's completion reward can still be doubled via a rewarded ad. */
+  get dailyBonusDoubleAvailable(): boolean {
+    this.ensureDailyState();
+    return this.daily.completed && this.daily.rewardClaimed && !this.daily.bonusDoubled;
+  }
 
   private createDailyState(): DailyState {
-    return { date: this.todayKey(), score: 0, target: DAILY_TARGET, completed: false, rewardClaimed: false };
+    return { date: this.todayKey(), score: 0, target: DAILY_TARGET, completed: false, rewardClaimed: false, bonusDoubled: false };
   }
 
   private todayKey(): string {
@@ -214,6 +232,7 @@ export class GameService {
         streak: this.streak,
         totalScore: this.totalScore,
         rewardAdNextAvailableAt: this.rewardAdNextAvailableAt,
+        claimedAchievements: this.claimedAchievements,
         modeProgress: this.modeProgress,
         lastResult: this.lastResult,
         history: this.history,
@@ -244,6 +263,10 @@ export class GameService {
         if (typeof parsed.rewardAdNextAvailableAt === 'number') {
           this.rewardAdNextAvailableAt = Math.max(0, parsed.rewardAdNextAvailableAt);
         }
+        if (Array.isArray(parsed.claimedAchievements)) {
+          this.claimedAchievements = parsed.claimedAchievements.filter((k: unknown): k is AchievementKey =>
+            typeof k === 'string' && (['first', 'streak', 'speed', 'legend', 'perfect'] as string[]).includes(k));
+        }
         if (parsed.modeProgress && typeof parsed.modeProgress === 'object') {
           this.modeProgress = parsed.modeProgress;
         }
@@ -268,7 +291,8 @@ export class GameService {
         score: Math.max(0, Number(this.daily.score) || 0),
         target: DAILY_TARGET,
         completed: Boolean(this.daily.completed),
-        rewardClaimed: Boolean(this.daily.rewardClaimed)
+        rewardClaimed: Boolean(this.daily.rewardClaimed),
+        bonusDoubled: Boolean(this.daily.bonusDoubled)
       };
     }
 
@@ -292,7 +316,8 @@ export class GameService {
       levelReward: Number(this.lastResult?.levelReward) || 0,
       scoreBonusCoins: Number(this.lastResult?.scoreBonusCoins) || 0,
       dailyBonus: Number(this.lastResult?.dailyBonus) || 0,
-      newBest: Boolean(this.lastResult?.newBest)
+      newBest: Boolean(this.lastResult?.newBest),
+      coinsDoubled: Boolean(this.lastResult?.coinsDoubled)
     };
     this.ensureDailyState();
     this.rebuildLeaderboard();
@@ -449,7 +474,7 @@ export class GameService {
 
     this.lastResult = {
       score: safeScore, accuracy: safeAccuracy, combo: Math.max(0, combo), xp: earnedXp, coins: earnedCoins,
-      mode, modeId, level: safeLevel, levelReward, scoreBonusCoins, dailyBonus, newBest
+      mode, modeId, level: safeLevel, levelReward, scoreBonusCoins, dailyBonus, newBest, coinsDoubled: false
     };
 
     this.save();
@@ -458,13 +483,57 @@ export class GameService {
 
   /**
    * Credits the one-time reward after a reward-video completion.
-   * For production APK builds this should be called from a verified
-   * Google AdMob Rewarded Ad completion callback.
+   * Must only be called after AdmobService.showRewarded()/RewardAdService.watch()
+   * resolves true — i.e. AdMob's own OnUserEarnedReward callback confirmed the ad
+   * was watched to completion, never optimistically from a click or ad-start event.
    */
   claimRewardAdReward(): boolean {
     if (!this.rewardAdAvailable) return false;
     this._coins += REWARD_AD_COINS;
     this.rewardAdNextAvailableAt = Date.now() + REWARD_AD_COOLDOWN_MS;
+    this.save();
+    return true;
+  }
+
+  /**
+   * Doubles the coins earned in the last completed round. One-time per
+   * result; the caller must only invoke this after a rewarded ad confirms
+   * the reward (see claimRewardAdReward's contract).
+   */
+  doubleLastResultCoins(): boolean {
+    if (this.lastResult.coins <= 0 || this.lastResult.coinsDoubled) return false;
+    this._coins += this.lastResult.coins;
+    this.lastResult = { ...this.lastResult, coinsDoubled: true };
+    this.save();
+    return true;
+  }
+
+  /**
+   * Doubles today's daily-challenge completion reward (once). Only callable
+   * once the daily reward has already been earned; the caller must only
+   * invoke this after a rewarded ad confirms the reward.
+   */
+  claimDailyDoubleReward(): boolean {
+    if (!this.dailyBonusDoubleAvailable) return false;
+    this._coins += DAILY_REWARD;
+    this.daily.bonusDoubled = true;
+    this.save();
+    return true;
+  }
+
+  isAchievementClaimed(key: AchievementKey): boolean {
+    return this.claimedAchievements.includes(key);
+  }
+
+  /**
+   * Credits the one-time coin reward for an unlocked achievement badge. The
+   * caller (AchievementsPage) computes `unlocked` from live stats and must
+   * only invoke this after a rewarded ad confirms the reward.
+   */
+  claimAchievementReward(key: AchievementKey, unlocked: boolean): boolean {
+    if (!unlocked || this.isAchievementClaimed(key)) return false;
+    this._coins += ACHIEVEMENT_REWARD_COINS;
+    this.claimedAchievements = [...this.claimedAchievements, key];
     this.save();
     return true;
   }
@@ -519,6 +588,9 @@ export class GameService {
     this.modeProgress = defaultModeProgress();
     this.history = [];
     this.daily = this.createDailyState();
+    // Achievement badges reset alongside the stats that unlock them; already-earned
+    // coins from previous claims are kept, matching how the coin wallet is preserved.
+    this.claimedAchievements = [];
 
     // Profile identity is not gameplay progress, so keep the player's
     // name/avatar/bio when progress is reset.
@@ -535,7 +607,8 @@ export class GameService {
       levelReward: 0,
       scoreBonusCoins: 0,
       dailyBonus: 0,
-      newBest: false
+      newBest: false,
+      coinsDoubled: false
     };
 
     this.save();

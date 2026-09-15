@@ -23,6 +23,17 @@
                         {{'daily.rewardClaimed' | translate}}</p>
                 </div><ion-icon name="trophy"></ion-icon>
             </section>
+            <section class="card double-reward-card" *ngIf="game.dailyBonusDoubleAvailable || game.daily.bonusDoubled">
+                <ng-container *ngIf="!game.daily.bonusDoubled; else doubledTpl">
+                    <p>🎬 {{'daily.doubleRewardDesc' | translate}}</p>
+                    <button class="btn primary" type="button" [disabled]="isWatchingAd" (click)="doubleReward()">
+                        <ion-icon name="play-circle"></ion-icon>
+                        {{isWatchingAd ? ('common.adLoading' | translate) : ('daily.doubleReward' | translate)}}
+                    </button>
+                    <small class="ad-error" *ngIf="adErrorMessage">{{adErrorMessage}}</small>
+                </ng-container>
+                <ng-template #doubledTpl><p class="doubled-msg">{{'daily.rewardDoubled' | translate}}</p></ng-template>
+            </section>
             <section class="card challenge-info">
                 <div><span class="label">{{'daily.currentStreak' | translate}}</span><strong>🔥 {{game.streak}}
                         {{'home.streak' | translate}}</strong></div>
