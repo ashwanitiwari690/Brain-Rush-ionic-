@@ -69,7 +69,6 @@ export interface DailyState {
 /** Achievement badges that can be claimed once each for coins via a rewarded ad. */
 export type AchievementKey = 'first' | 'streak' | 'speed' | 'legend' | 'perfect';
 
-const MODE_IDS: GameModeId[] = ['math', 'reaction', 'memory', 'color', 'sequence', 'quick'];
 const LEVELS: GameLevel[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const MAX_LEVEL = 10;
 const LEVEL_REWARD = 10;
@@ -612,6 +611,21 @@ export class GameService {
     };
 
     this.save();
+    location.reload();
+  }
+
+  /**
+   * Permanently and completely deletes all user data, satisfying Google Play's
+   * mandatory account and data deletion policy. Wipes local storage completely and reloads.
+   */
+  deleteAllUserData(): void {
+    try {
+      localStorage.removeItem(STATE_STORAGE_KEY);
+      localStorage.removeItem('brain-rush-language');
+      localStorage.clear();
+    } catch {
+      // Ignore storage errors
+    }
     location.reload();
   }
 }

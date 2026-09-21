@@ -187,6 +187,29 @@
   font-size: 13px
 }
 
+.welcome-privacy-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: #8da0cc;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(45, 233, 255, 0.35);
+  text-underline-offset: 3px;
+  transition: color .15s ease;
+}
+
+.welcome-privacy-btn:hover {
+  color: var(--cyan);
+}
+
 @keyframes float {
   50% {
     transform: translateY(-8px)

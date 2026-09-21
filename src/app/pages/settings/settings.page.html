@@ -153,12 +153,23 @@
             <b>›</b>
           </button>
 
-          <button class="row button-row danger" (click)="reset()">
+          <button class="row button-row" (click)="reset()">
             <ion-icon name="trash"></ion-icon>
 
             <span>
               <b>{{ 'settings.reset' | translate }}</b>
               <small>{{ 'settings.resetDesc' | translate }}</small>
+            </span>
+
+            <b>›</b>
+          </button>
+
+          <button class="row button-row danger" (click)="deleteAll()">
+            <ion-icon name="trash-bin"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.deleteAll' | translate }}</b>
+              <small>{{ 'settings.deleteAllDesc' | translate }}</small>
             </span>
 
             <b>›</b>
@@ -170,6 +181,28 @@
         <div class="label">{{ 'settings.app' | translate }}</div>
 
         <div class="card rows">
+          <button class="row button-row" (click)="openAdPrivacySettings()">
+            <ion-icon name="options-outline"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.adSettings' | translate }}</b>
+              <small>{{ 'settings.adSettingsDesc' | translate }}</small>
+            </span>
+
+            <b>›</b>
+          </button>
+
+          <button class="row button-row" (click)="openPrivacyPolicy()">
+            <ion-icon name="shield-checkmark"></ion-icon>
+
+            <span>
+              <b>{{ 'settings.privacy' | translate }}</b>
+              <small>{{ 'settings.privacyDesc' | translate }}</small>
+            </span>
+
+            <b>›</b>
+          </button>
+
           <div class="row">
             <ion-icon name="information-circle"></ion-icon>
 
@@ -184,7 +217,7 @@
               <b>{{ 'settings.version' | translate }}</b>
             </span>
 
-            <b>1.1.0</b>
+            <b>1.0.0</b>
           </div>
         </div>
       </div>

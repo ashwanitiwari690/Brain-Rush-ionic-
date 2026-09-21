@@ -61,6 +61,20 @@ if (!manifest.includes('com.google.android.gms.ads.APPLICATION_ID')) {
   console.log('[prepare-android] Registered AdMob App ID meta-data in AndroidManifest.xml.');
 }
 
+// Google Play Console & AdMob permissions requirement
+const requiredPermissions = [
+  'android.permission.INTERNET',
+  'android.permission.ACCESS_NETWORK_STATE',
+  'com.google.android.gms.permission.AD_ID'
+];
+
+for (const perm of requiredPermissions) {
+  if (!manifest.includes(`android:name="${perm}"`)) {
+    manifest = manifest.replace('</manifest>', `    <uses-permission android:name="${perm}" />\n</manifest>`);
+    console.log(`[prepare-android] Registered required permission: ${perm}`);
+  }
+}
+
 fs.writeFileSync(manifestPath, manifest);
 console.log('[prepare-android] Disabled Android backup/restore so uninstall starts a fresh local game wallet. App updates still preserve app data.');
 

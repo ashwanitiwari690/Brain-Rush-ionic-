@@ -1,0 +1,80 @@
+.privacy-hero {
+  text-align: center;
+  margin: 18px 0 22px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(45, 233, 255, 0.12);
+  border: 1px solid rgba(45, 233, 255, 0.35);
+  color: var(--cyan);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.privacy-hero h1 {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin: 0 0 6px;
+}
+
+.privacy-hero .subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+  padding: 0 16px;
+}
+
+.policy-card {
+  padding: 20px 18px;
+  line-height: 1.6;
+  color: #d8e2ff;
+  font-size: 13.5px;
+  margin-bottom: 30px;
+}
+
+.policy-card h2 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  border-bottom: 1px solid rgba(115, 130, 200, 0.18);
+  padding-bottom: 6px;
+  margin: 18px 0 8px;
+}
+
+.policy-card h2:first-of-type {
+  margin-top: 0;
+}
+
+.policy-card p {
+  margin: 0 0 12px;
+  color: #cad6fc;
+}
+
+.policy-card p:last-child {
+  margin-bottom: 0;
+}
+
+.policy-card strong {
+  color: #fff;
+}
+
+.contact-email {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(45, 233, 255, 0.4);
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: var(--cyan);
+  margin-top: 4px;
+  font-size: 13px;
+}
+

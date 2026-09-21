@@ -41,5 +41,6 @@ export const routes: Routes = [
   { path: 'achievements', loadComponent: () => import('./pages/achievements/achievements.page').then(m => m.AchievementsPage) },
   { path: 'daily-challenge', loadComponent: () => import('./pages/daily-challenge/daily-challenge.page').then(m => m.DailyChallengePage) },
   { path: 'settings', loadComponent: () => import('./pages/settings/settings.page').then(m => m.SettingsPage) },
+  { path: 'privacy-policy', loadComponent: () => import('./pages/privacy-policy/privacy-policy.page').then(m => m.PrivacyPolicyPage) },
   { path: '**', redirectTo: 'welcome' }
 ];

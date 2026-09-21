@@ -6,5 +6,5 @@ export const environment = {
   appVerificationApiUrl: 'https://api.admobility.in/api/app-verification',
   // TODO: paste the API key shown for this game's App Promotion campaign in the
   // Earnivo agent panel. Leave blank to skip the install-verification call entirely.
-  appVerificationApiKey: 'ak_93cc0857976989cf3898299364417f20dce65989d44df070'
+  appVerificationApiKey: 'ak_a92790da5ccccb63a43bdeb0617e1b60dc53024606339eee'
 };

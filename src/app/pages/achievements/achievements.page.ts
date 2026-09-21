@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
@@ -21,6 +21,7 @@ interface Achievement {
 @Component({
   selector: 'app-achievements',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports:[CommonModule, IonContent, IonIcon, TranslatePipe],
   templateUrl: 'achievements.page.html',
   styleUrls: ['achievements.page.scss']
@@ -29,7 +30,13 @@ export class AchievementsPage {
   isWatchingAd: AchievementKey | null = null;
   adErrorMessage = '';
 
-  constructor(public game: GameService, private router: Router, public language: LanguageService, private rewardAd: RewardAdService) {
+  constructor(
+    public game: GameService,
+    private router: Router,
+    public language: LanguageService,
+    private rewardAd: RewardAdService,
+    private cdr: ChangeDetectorRef
+  ) {
     addIcons({ arrowBack, lockClosed, trophy, flame, flash, star, playCircle });
   }
 
@@ -75,6 +82,7 @@ export class AchievementsPage {
     if (!achievement.unlocked || this.isClaimed(achievement.key) || this.isWatchingAd) return;
     this.adErrorMessage = '';
     this.isWatchingAd = achievement.key;
+    this.cdr.markForCheck();
     const granted = await this.rewardAd.watch();
     this.isWatchingAd = null;
     if (granted) {
@@ -82,6 +90,7 @@ export class AchievementsPage {
     } else {
       this.adErrorMessage = this.language.t('common.adUnavailable');
     }
+    this.cdr.markForCheck();
   }
 
   go(): void {

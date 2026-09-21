@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,6 +18,7 @@ type Mode = 'math' | 'reaction' | 'memory' | 'color' | 'sequence' | 'quick';
 @Component({
   selector: 'app-game',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports:[CommonModule, IonContent, IonIcon, TranslatePipe],
   templateUrl: 'game.page.html',
   styleUrls: ['game.page.scss']
@@ -78,7 +79,8 @@ export class GamePage implements OnInit, OnDestroy {
     private audio: AudioService,
     private admob: AdmobService,
     private rewardAd: RewardAdService,
-    public language: LanguageService
+    public language: LanguageService,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({
       arrowBack, timer, heart, flame, play, flash, calculator, playCircle
@@ -137,6 +139,7 @@ export class GamePage implements OnInit, OnDestroy {
   async start(): Promise<void> {
     if (this.startingChallenge) return;
     this.startingChallenge = true;
+    this.cdr.markForCheck();
     this.audio.click();
     await this.admob.showInterstitial();
     this.startingChallenge = false;
@@ -159,11 +162,13 @@ export class GamePage implements OnInit, OnDestroy {
     this.audio.startMusic();
     this.nextRound();
     this.startTimer();
+    this.cdr.markForCheck();
   }
 
   private startTimer(): void {
     this.timerId = setInterval(() => {
       this.time--;
+      this.cdr.markForCheck();
       if (this.time <= 0) void this.endGame('time');
     }, 1000);
   }
@@ -264,6 +269,7 @@ export class GamePage implements OnInit, OnDestroy {
     this.memoryTimeout = setTimeout(() => {
       this.memoryVisible = false;
       this.buildMemoryChoices();
+      this.cdr.markForCheck();
     }, Math.max(600, 1550 - this.level * 105));
   }
 
@@ -438,7 +444,10 @@ export class GamePage implements OnInit, OnDestroy {
     this.moveReactionTarget();
     const min = Math.max(180, 800 - this.level * 60);
     const max = Math.max(min + 250, 2100 - this.level * 100);
-    this.reactionTimeout = setTimeout(() => this.reactionReady = true, min + Math.random() * (max - min));
+    this.reactionTimeout = setTimeout(() => {
+      this.reactionReady = true;
+      this.cdr.markForCheck();
+    }, min + Math.random() * (max - min));
   }
 
   tapReaction(): void {
@@ -456,7 +465,10 @@ export class GamePage implements OnInit, OnDestroy {
     this.good();
     this.reactionReady = false;
     const delay = Math.max(180, 950 - this.level * 70);
-    this.reactionTimeout = setTimeout(() => this.reactionReady = true, delay + Math.random() * Math.max(180, 550 - this.level * 30));
+    this.reactionTimeout = setTimeout(() => {
+      this.reactionReady = true;
+      this.cdr.markForCheck();
+    }, delay + Math.random() * Math.max(180, 550 - this.level * 30));
   }
 
   private good(): void {
@@ -487,16 +499,19 @@ export class GamePage implements OnInit, OnDestroy {
     this.clearTimers();
     this.audio.stopMusic();
     this.continueOffered = true;
+    this.cdr.markForCheck();
   }
 
   async watchAdForContinue(): Promise<void> {
     if (this.isWatchingContinueAd) return;
     this.continueAdError = false;
     this.isWatchingContinueAd = true;
+    this.cdr.markForCheck();
     const granted = await this.rewardAd.watch();
     this.isWatchingContinueAd = false;
     if (!granted) {
       this.continueAdError = true;
+      this.cdr.markForCheck();
       return;
     }
     this.continueUsed = true;
@@ -506,6 +521,7 @@ export class GamePage implements OnInit, OnDestroy {
     this.audio.startMusic();
     this.startTimer();
     this.nextRound();
+    this.cdr.markForCheck();
   }
 
   declineContinue(): void {

@@ -2,16 +2,6 @@
 
 .section-link{border:0;background:transparent;color:var(--cyan);font-size:20px}.daily{cursor:pointer}
 
-.game-card{min-height:238px;padding:15px}.game-card h3{color:var(--text)}.level-heading{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.7px}.level-heading b{color:var(--gold);font-size:11px}.level-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px}.level-btn{min-width:0;min-height:48px;border:1px solid rgba(111,128,255,.38);border-radius:12px;background:rgba(13,24,57,.82);color:#7180a8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.2px}.level-btn.unlocked{color:var(--text);border-color:rgba(90,123,255,.7);background:linear-gradient(145deg,rgba(47,67,132,.9),rgba(20,31,71,.9))}.level-btn.completed{border-color:rgba(93,255,172,.72);box-shadow:0 0 12px rgba(93,255,172,.14);color:var(--green)}.level-btn:disabled{opacity:.52;cursor:not-allowed}.level-btn:not(:disabled):active{transform:scale(.96)}.level-number{font-size:11px;color:var(--cyan)}.level-btn ion-icon{font-size:11px}.level-hint{display:block;margin-top:7px;color:var(--muted);font-size:8px;line-height:1.2}@media(max-width:380px){.grid2{grid-template-columns:1fr}.game-card{min-height:215px}}
-
-/* Ten-level progression: compact, touch-friendly and easy to scan on mobile. */
-.game-card{min-height:250px}
-.level-row{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
-.level-btn{min-height:50px;padding:4px 2px}
-.level-btn .level-number{font-size:13px;line-height:1}
-.level-btn span:nth-child(2){font-size:7px;white-space:nowrap}
-.level-hint{min-height:20px}
-@media(max-width:380px){.game-card{min-height:330px}.level-row{gap:4px}.level-btn{min-height:46px}.level-btn span:nth-child(2){font-size:6.5px}}
 
 /* Refined game-mode UI: larger hierarchy, no overlapping level labels. */
 .game-card{

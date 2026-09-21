@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { TranslatePipe } from '../../services/translate.pipe';
 @Component({
   selector: 'app-daily',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports:[CommonModule, IonContent, IonIcon, TranslatePipe],
   templateUrl: 'daily-challenge.page.html',
   styleUrls: ['daily-challenge.page.scss']
@@ -28,7 +29,8 @@ export class DailyChallengePage {
     public game: GameService,
     private router: Router,
     private rewardAd: RewardAdService,
-    private language: LanguageService
+    private language: LanguageService,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ arrowBack, play, trophy, flame, checkmarkCircle, playCircle });
   }
@@ -47,6 +49,7 @@ export class DailyChallengePage {
     if (!this.game.dailyBonusDoubleAvailable || this.isWatchingAd) return;
     this.adErrorMessage = '';
     this.isWatchingAd = true;
+    this.cdr.markForCheck();
     const granted = await this.rewardAd.watch();
     this.isWatchingAd = false;
     if (granted) {
@@ -54,5 +57,6 @@ export class DailyChallengePage {
     } else {
       this.adErrorMessage = this.language.t('common.adUnavailable');
     }
+    this.cdr.markForCheck();
   }
 }

@@ -58,6 +58,12 @@ const translations: Record<AppLanguage, Record<string, string>> = {
     'settings.app': 'APP', 'settings.about': 'About Brain Rush', 'settings.aboutDesc': '60-second brain training challenges', 'settings.version': 'Version', 'settings.versionDesc': 'Mobile-ready Ionic build',
     'settings.language': 'LANGUAGE', 'settings.languageDesc': 'Choose your preferred app language', 'settings.english': 'English', 'settings.hindi': 'हिन्दी',
     'settings.resetConfirm': 'Reset gameplay progress? Your coins will be kept.',
+    'settings.privacy': 'Privacy Policy', 'settings.privacyDesc': 'Data protection and policy details',
+    'settings.adSettings': 'Ad Privacy Settings', 'settings.adSettingsDesc': 'Manage personalized ads and consent choices',
+    'settings.adSettingsUnavailable': 'Ad privacy options are not required for your region or not available yet.',
+    'settings.deleteAll': 'Delete Account & All Data', 'settings.deleteAllDesc': 'Permanently delete all profile, coins, and game data',
+    'settings.deleteAllConfirm': 'Are you sure you want to delete ALL data? This will permanently delete your player profile, coins, best scores, and achievements. This action cannot be undone.',
+    'privacy.title': 'PRIVACY POLICY', 'privacy.lastUpdated': 'Last updated: September 2026', 'privacy.back': 'Back',
     'settings.withdraw': 'WITHDRAW', 'settings.withdrawTitle': 'Withdraw coins', 'settings.withdrawDesc': 'Enter the 10-digit mobile number registered on your Earnivo account.', 'settings.withdrawNumber': '10-DIGIT NUMBER', 'settings.withdrawButton': 'WITHDRAW', 'settings.withdrawReady': 'Withdrawal UI is ready. API integration can be connected later.',
     'settings.withdrawMinimum': 'Reach {{min}} coins to unlock withdrawals.', 'settings.withdrawLoading': 'PROCESSING…',
     'settings.withdrawSuccess': 'Redemption successful', 'settings.withdrawSuccessDesc': '{{coins}} coins converted to ₹{{rupees}}. Your balance has been updated.',
@@ -127,6 +133,12 @@ const translations: Record<AppLanguage, Record<string, string>> = {
     'settings.app': 'ऐप', 'settings.about': 'ब्रेन रश के बारे में', 'settings.aboutDesc': '60 सेकंड के ब्रेन ट्रेनिंग चैलेंज', 'settings.version': 'वर्ज़न', 'settings.versionDesc': 'मोबाइल के लिए तैयार Ionic बिल्ड',
     'settings.language': 'भाषा', 'settings.languageDesc': 'ऐप की पसंदीदा भाषा चुनें', 'settings.english': 'English', 'settings.hindi': 'हिन्दी',
     'settings.resetConfirm': 'क्या आप गेम की प्रगति रीसेट करना चाहते हैं? आपके कॉइन्स सुरक्षित रहेंगे।',
+    'settings.privacy': 'गोपनीयता नीति', 'settings.privacyDesc': 'डेटा सुरक्षा और नीति विवरण',
+    'settings.adSettings': 'विज्ञापन गोपनीयता सेटिंग्स', 'settings.adSettingsDesc': 'व्यक्तिगत विज्ञापनों और सहमति विकल्पों का प्रबंधन करें',
+    'settings.adSettingsUnavailable': 'विज्ञापन गोपनीयता विकल्प आपके क्षेत्र के लिए आवश्यक नहीं हैं या अभी उपलब्ध नहीं हैं।',
+    'settings.deleteAll': 'अकाउंट और सारा डेटा हटाएं', 'settings.deleteAllDesc': 'प्रोफ़ाइल, कॉइन्स और गेम का सारा डेटा हमेशा के लिए हटाएं',
+    'settings.deleteAllConfirm': 'क्या आप वाकई अपना सारा डेटा हटाना चाहते हैं? इससे आपकी प्रोफ़ाइल, कॉइन्स, हाई स्कोर और उपलब्धियां हमेशा के लिए मिट जाएंगी। यह वापस नहीं लाया जा सकता।',
+    'privacy.title': 'गोपनीयता नीति', 'privacy.lastUpdated': 'अंतिम अपडेट: सितंबर 2026', 'privacy.back': 'वापस',
     'settings.withdraw': 'निकासी', 'settings.withdrawTitle': 'कॉइन निकालें', 'settings.withdrawDesc': 'अपने Earnivo खाते में पंजीकृत 10 अंकों का मोबाइल नंबर दर्ज करें।', 'settings.withdrawNumber': '10 अंकों का नंबर', 'settings.withdrawButton': 'निकासी करें', 'settings.withdrawReady': 'निकासी UI तैयार है। API को बाद में जोड़ा जा सकता है।',
     'settings.withdrawMinimum': 'निकासी अनलॉक करने के लिए {{min}} कॉइन्स तक पहुंचें।', 'settings.withdrawLoading': 'प्रोसेस हो रहा है…',
     'settings.withdrawSuccess': 'निकासी सफल रही', 'settings.withdrawSuccessDesc': '{{coins}} कॉइन्स ₹{{rupees}} में बदले गए। आपका बैलेंस अपडेट हो गया है।',
@@ -152,12 +164,14 @@ export class LanguageService {
     localStorage.setItem('brain-rush-language', language);
   }
 
-  t(key: string, params: Record<string, string | number> = {}): string {
+  t(key: string, params?: Record<string, string | number>): string {
     const currentLanguage: AppLanguage = this.language();
-    let value = translations[currentLanguage][key] ?? translations.en[key] ?? key;
-    Object.entries(params).forEach(([name, replacement]) => {
-      value = value.replace(new RegExp(`\\{\\{${name}\\}\\}`, 'g'), String(replacement));
-    });
+    let value = translations[currentLanguage]?.[key] ?? translations.en[key] ?? key;
+    if (params && Object.keys(params).length > 0) {
+      for (const [name, replacement] of Object.entries(params)) {
+        value = value.replace(new RegExp(`\\{\\{${name}\\}\\}`, 'g'), String(replacement));
+      }
+    }
     return value;
   }
 

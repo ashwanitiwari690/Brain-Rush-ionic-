@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.brainrush.game',
+  appId: 'com.admobility.brainrush',
   appName: 'Brain Rush',
   webDir: 'www/browser',
 };

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
@@ -13,6 +13,7 @@ type Period = 'today' | 'week' | 'all';
 @Component({
   selector: 'app-leaderboard',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports:[CommonModule, FormsModule, IonContent, IonIcon, TranslatePipe],
   templateUrl: 'leaderboard.page.html',
   styleUrls: ['leaderboard.page.scss']

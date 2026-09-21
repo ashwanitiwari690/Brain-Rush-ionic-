@@ -1,0 +1,107 @@
+<ion-content [fullscreen]="true">
+  <main class="page">
+    <div class="shell">
+
+      <header class="topbar">
+        <button
+          class="icon-btn"
+          (click)="goBack()"
+          [attr.aria-label]="'common.back' | translate">
+          <ion-icon name="arrow-back"></ion-icon>
+        </button>
+
+        <div class="title">{{ 'privacy.title' | translate }}</div>
+        <div></div>
+      </header>
+
+      <section class="privacy-hero">
+        <div class="hero-badge">
+          <ion-icon name="shield-checkmark"></ion-icon>
+          <span>{{ 'privacy.lastUpdated' | translate }}</span>
+        </div>
+        <h1>Brain Rush</h1>
+        <p class="subtitle">
+          {{ language.language() === 'hi' 
+            ? 'आपकी गोपनीयता और डेटा सुरक्षा हमारे लिए अत्यंत महत्वपूर्ण है।' 
+            : 'Your privacy and data protection are fundamental to our games.' }}
+        </p>
+      </section>
+
+      @if (language.language() === 'hi') {
+        <!-- Hindi Content -->
+        <article class="policy-card card">
+          <h2>1. परिचय</h2>
+          <p>
+            ब्रेन रश (Brain Rush) में आपका स्वागत है। यह गोपनीयता नीति बताती है कि जब आप हमारे मोबाइल एप्लिकेशन का उपयोग करते हैं, तो हम आपकी जानकारी को कैसे एकत्र, उपयोग और सुरक्षित करते हैं।
+          </p>
+
+          <h2>2. डेटा जो हम एकत्र करते हैं</h2>
+          <p><strong>स्थानीय गेमप्ले डेटा:</strong> आपके स्कोर, पूरे किए गए लेवल, सिक्के (coins), दैनिक चुनौतियां, और ध्वनि/संगीत सेटिंग्स आपके डिवाइस के स्थानीय स्टोरेज में सुरक्षित रूप से सहेजे जाते हैं। हम अपने सर्वर पर आपका व्यक्तिगत डेटा संग्रहीत नहीं करते हैं।</p>
+          <p><strong>डिवाइस और तकनीकी पहचानकर्ता:</strong> ऐप के सुचारू संचालन और विज्ञापन सेवा के लिए, Google Mobile Ads SDK आपके डिवाइस का Google Advertising ID (AAID), डिवाइस मॉडल, ऑपरेटिंग सिस्टम संस्करण और बुनियादी प्रदर्शन डेटा एकत्र कर सकता है।</p>
+
+          <h2>3. तृतीय-पक्ष सेवाएं और विज्ञापन (Google AdMob)</h2>
+          <p>
+            हम अपने एप्लिकेशन में विज्ञापन प्रदर्शित करने के लिए <strong>Google AdMob</strong> का उपयोग करते हैं। Google AdMob विज्ञापनों को वैयक्तिकृत करने, धोखाधड़ी को रोकने और प्रासंगिक विज्ञापन दिखाने के लिए विज्ञापन पहचानकर्ता (Google Advertising ID) का उपयोग कर सकता है।
+          </p>
+          <p>
+            यूरोपीय आर्थिक क्षेत्र (EEA) और यूके के उपयोगकर्ताओं के लिए, हम Google के उपयोगकर्ता संदेश प्लेटफ़ॉर्म (UMP) के माध्यम से सहमति प्राप्त करते हैं। आप ऐप की <strong>सेटिंग्स > विज्ञापन गोपनीयता सेटिंग्स</strong> में जाकर कभी भी अपनी सहमति बदल सकते हैं।
+          </p>
+
+          <h2>4. बच्चों की गोपनीयता</h2>
+          <p>
+            ब्रेन रश सामान्य दर्शकों (13 वर्ष और उससे अधिक आयु) के लिए डिज़ाइन किया गया है। हम जानबूझकर 13 वर्ष से कम आयु के बच्चों से कोई व्यक्तिगत रूप से पहचान योग्य जानकारी एकत्र नहीं करते हैं।
+          </p>
+
+          <h2>5. उपयोगकर्ता डेटा हटाने का अधिकार</h2>
+          <p>
+            आपके पास अपने सभी डेटा को हटाने का पूरा अधिकार है। आप ऐप की <strong>सेटिंग्स > अकाउंट और सारा डेटा हटाएं</strong> पर क्लिक करके अपने डिवाइस से सभी सहेजे गए गेम डेटा, सिक्कों और प्रोफ़ाइल जानकारी को तुरंत और स्थायी रूप से मिटा सकते हैं।
+          </p>
+
+          <h2>6. हमसे संपर्क करें</h2>
+          <p>
+            यदि आपके पास इस गोपनीयता नीति या ऐप के बारे में कोई प्रश्न हैं, तो आप हमसे ईमेल के माध्यम से संपर्क कर सकते हैं:
+          </p>
+          <p class="contact-email"><strong>support&#64;brainrushgame.com</strong></p>
+        </article>
+      } @else {
+        <!-- English Content -->
+        <article class="policy-card card">
+          <h2>1. Overview</h2>
+          <p>
+            Welcome to Brain Rush. This Privacy Policy outlines our commitments regarding the collection, use, disclosure, and protection of information when you use our mobile application.
+          </p>
+
+          <h2>2. Data We Collect and Store</h2>
+          <p><strong>Local Gameplay Data:</strong> To provide a seamless gaming experience, Brain Rush stores your high scores, completed challenge levels, virtual coin balance, daily streaks, player name, and audio settings locally on your device via standard local storage. We do not require account registration or store your personal identity on external servers.</p>
+          <p><strong>Technical Identifiers & Analytics:</strong> For ad delivery, crash diagnostics, and fraud prevention, third-party SDKs (such as the Google Mobile Ads SDK) may automatically collect device identifiers, including your Google Advertising ID (AAID), operating system version, and general network connection state.</p>
+
+          <h2>3. Advertising Partners (Google AdMob)</h2>
+          <p>
+            This application uses <strong>Google AdMob</strong> to display interstitial and rewarded video advertisements. Google AdMob may collect and process information such as your Advertising ID, IP address, and interaction data to serve personalized and non-personalized ads in compliance with Google's Advertising Policies.
+          </p>
+          <p>
+            For users residing in the European Economic Area (EEA) and the United Kingdom, we implement Google's User Messaging Platform (UMP) to gather explicit consent in compliance with the General Data Protection Regulation (GDPR). You may modify your consent choices at any time via <strong>Settings &gt; Ad Privacy Settings</strong> within this application.
+          </p>
+
+          <h2>4. Children's Privacy</h2>
+          <p>
+            Brain Rush is intended for a general audience aged 13 and older. We do not knowingly solicit or collect personally identifiable information from children under the age of 13. If you believe that a minor has provided us with personal data, please contact us so we can take appropriate measures.
+          </p>
+
+          <h2>5. Your Data Rights & Deletion Policy</h2>
+          <p>
+            In accordance with Google Play's User Data and Account Deletion policies, you have complete control over your data. You can delete all local data, coins, high scores, and player profile information at any time directly in the app by going to <strong>Settings &gt; Delete Account &amp; All Data</strong>.
+          </p>
+
+          <h2>6. Policy Updates & Contact</h2>
+          <p>
+            We may update our Privacy Policy periodically to reflect improvements in our games or changes in legal regulations. For any privacy inquiries or support, please contact us at:
+          </p>
+          <p class="contact-email"><strong>support&#64;brainrushgame.com</strong></p>
+        </article>
+      }
+
+    </div>
+  </main>
+</ion-content>
+
