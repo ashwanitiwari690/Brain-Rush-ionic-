@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy } from '@angular/core';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AudioService } from '../../services/audio.service';
@@ -14,12 +14,14 @@ import {
   volumeHigh,
   volumeMute,
   musicalNotes,
+  shieldCheckmark,
   language as languageIcon
 } from 'ionicons/icons';
 
 @Component({
   selector: 'app-welcome',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonContent, IonIcon, TranslatePipe],
   templateUrl: 'welcome.page.html',
   styleUrls: ['welcome.page.scss']
@@ -43,6 +45,7 @@ export class WelcomePage implements OnInit, OnDestroy {
       volumeHigh,
       volumeMute,
       musicalNotes,
+      shieldCheckmark,
       language: languageIcon
     });
   }
@@ -88,5 +91,9 @@ export class WelcomePage implements OnInit, OnDestroy {
 
   toggleSound(): void {
     this.audio.setSound(!this.audio.soundEnabled);
+  }
+
+  openPrivacyPolicy(): void {
+    this.router.navigateByUrl('/privacy-policy');
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
@@ -12,6 +12,7 @@ import { settings, gameController, home, podium, personCircle, play, calendar, t
 @Component({
   selector: 'app-home',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, IonContent, IonIcon, TranslatePipe],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss']
@@ -30,12 +31,14 @@ export class HomePage implements OnInit, OnDestroy {
   isWatchingNativeAd = false;
   adErrorMessage = '';
   private rewardRefreshId?: ReturnType<typeof setInterval>;
+  private levelsCache: Partial<Record<GameModeId, { unlocked: number; levels: GameLevel[] }>> = {};
 
   constructor(
     public game: GameService,
     private router: Router,
     public language: LanguageService,
-    public rewardAd: RewardAdService
+    public rewardAd: RewardAdService,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({
       settings, gameController, home, podium, personCircle, play, calendar, timer,
@@ -62,6 +65,7 @@ export class HomePage implements OnInit, OnDestroy {
   private startCooldownTickerIfNeeded(): void {
     if (this.rewardRefreshId || this.game.rewardAdAvailable) return;
     this.rewardRefreshId = setInterval(() => {
+      this.cdr.markForCheck();
       if (this.game.rewardAdAvailable) this.stopCooldownTicker();
     }, 1000);
   }
@@ -69,6 +73,7 @@ export class HomePage implements OnInit, OnDestroy {
   private stopCooldownTicker(): void {
     if (this.rewardRefreshId) clearInterval(this.rewardRefreshId);
     this.rewardRefreshId = undefined;
+    this.cdr.markForCheck();
   }
 
   go(path: string): void { this.router.navigateByUrl(path); }
@@ -87,10 +92,15 @@ export class HomePage implements OnInit, OnDestroy {
 
   visibleLevels(mode: GameModeId): GameLevel[] {
     const unlocked = this.game.getLevelProgress(mode).unlocked;
+    const cached = this.levelsCache[mode];
+    if (cached && cached.unlocked === unlocked) {
+      return cached.levels;
+    }
     const start = Math.floor((unlocked - 1) / 3) * 3 + 1;
-    return [start, start + 1, start + 2].filter((level): level is GameLevel => level <= this.game.maxGameLevel) as GameLevel[];
+    const levels = [start, start + 1, start + 2].filter((level): level is GameLevel => level <= this.game.maxGameLevel) as GameLevel[];
+    this.levelsCache[mode] = { unlocked, levels };
+    return levels;
   }
-
 
   get scoreProgress(): number { return Math.min(100, Math.round((this.game.totalScore / 30000) * 100)); }
 
@@ -109,9 +119,8 @@ export class HomePage implements OnInit, OnDestroy {
     this.adErrorMessage = '';
 
     if (this.rewardAd.usesNativeAds) {
-      // Native: the real full-screen AdMob ad takes over the screen, so no
-      // local modal is shown — only a brief loading state on the button.
       this.isWatchingNativeAd = true;
+      this.cdr.markForCheck();
       const granted = await this.rewardAd.watch();
       this.isWatchingNativeAd = false;
       if (granted) {
@@ -120,22 +129,24 @@ export class HomePage implements OnInit, OnDestroy {
       } else {
         this.adErrorMessage = this.language.t('common.adUnavailable');
       }
+      this.cdr.markForCheck();
       return;
     }
 
-    // Web/dev fallback: a local simulated video so the reward flow can be
-    // tested without a device. Never runs on native.
     this.rewardVideoOpen = true;
+    this.cdr.markForCheck();
   }
 
   closeRewardVideo(): void {
     this.rewardVideoOpen = false;
+    this.cdr.markForCheck();
   }
 
   onRewardVideoEnded(): void {
     if (this.game.claimRewardAdReward()) {
       this.rewardVideoOpen = false;
       this.startCooldownTickerIfNeeded();
+      this.cdr.markForCheck();
     }
   }
 

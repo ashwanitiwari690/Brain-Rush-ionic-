@@ -1,0 +1,9 @@
+# Google AdMob Authorized Digital Sellers (app-ads.txt) for Brain Rush
+# Replace "pub-0000000000000000" below with your actual AdMob Publisher ID:
+# (Found in Google AdMob Console > Settings > Account Information > Publisher ID)
+#
+# Once published, host this file at the root of your developer website:
+# Example: https://yourdomain.com/app-ads.txt
+#
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+

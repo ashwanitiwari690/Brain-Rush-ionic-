@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Capacitor, PluginListenerHandle } from '@capacitor/core';
-import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob';
-import { AD_UNIT_IDS, INTERSTITIAL_EVERY_N_ROUNDS } from '../config/admob.config';
+import { AdMob, RewardAdPluginEvents, AdmobConsentStatus } from '@capacitor-community/admob';
+import { AD_UNIT_IDS, ADMOB_CONFIG, INTERSTITIAL_EVERY_N_ROUNDS } from '../config/admob.config';
 
 /**
- * Thin wrapper around @capacitor-community/admob — the only file that talks
- * to the plugin directly; every page/service goes through this one instead.
- * Ads only run on native platforms; the plugin's web implementation is a
- * stub, so callers must never grant a reward based on it directly (see
- * RewardAdService for the web/dev-safe fallback used by the UI).
+ * Service managing Google AdMob ad lifecycles and Google UMP Consent Management.
+ * Complies with Google Play & AdMob European Economic Area (EEA) / UK regulations (TCF v2.2).
  */
 @Injectable({ providedIn: 'root' })
 export class AdmobService {
@@ -28,14 +25,50 @@ export class AdmobService {
   initialize(): Promise<void> {
     if (!this.isSupported) return Promise.resolve();
     if (!this.initPromise) {
-      this.initPromise = AdMob.initialize({ initializeForTesting: true })
-        .then(() => {
-          void this.preloadInterstitial();
-          void this.preloadRewarded();
-        })
-        .catch(() => {});
+      this.initPromise = this.requestConsentAndInit();
     }
     return this.initPromise;
+  }
+
+  /**
+   * Request Google UMP user consent (required in EEA & UK) before initializing AdMob.
+   * If consent is required, shows the Google consent dialogue automatically.
+   */
+  private async requestConsentAndInit(): Promise<void> {
+    try {
+      const consentInfo = await AdMob.requestConsentInfo();
+      if (consentInfo.isConsentFormAvailable && consentInfo.status === AdmobConsentStatus.REQUIRED) {
+        await AdMob.showConsentForm();
+      }
+    } catch (e) {
+      console.debug('[admob] UMP consent request error or not applicable:', e);
+    }
+
+    try {
+      await AdMob.initialize({
+        initializeForTesting: ADMOB_CONFIG.isTesting,
+        testingDevices: ADMOB_CONFIG.testDeviceIds.length ? [...ADMOB_CONFIG.testDeviceIds] : undefined
+      });
+      void this.preloadInterstitial();
+      void this.preloadRewarded();
+    } catch (err) {
+      console.error('[admob] Failed to initialize AdMob SDK:', err);
+    }
+  }
+
+  /**
+   * Shows the Google Privacy Options Form so users can review or revoke consent
+   * at any time from the app's settings menu (required by Google AdMob EU policy).
+   */
+  async showPrivacyOptions(): Promise<boolean> {
+    if (!this.isSupported) return false;
+    try {
+      await AdMob.showPrivacyOptionsForm();
+      return true;
+    } catch (error) {
+      console.debug('[admob] showPrivacyOptionsForm not required or failed:', error);
+      return false;
+    }
   }
 
   /** Preloads (or reloads) the interstitial in the background. */
@@ -68,9 +101,7 @@ export class AdmobService {
   /**
    * Shows the interstitial if one is ready (or can be loaded within a short
    * timeout) and resolves once it's dismissed. Gives up after ~4s so a slow
-   * or unavailable ad never blocks whatever navigation it's gating. Returns
-   * true only if an ad was actually shown. Re-entrant calls while one is
-   * already showing resolve false immediately instead of stacking requests.
+   * or unavailable ad never blocks navigation. Returns true only if an ad was shown.
    */
   async showInterstitial(): Promise<boolean> {
     if (!this.isSupported || this.interstitialShowing) return false;
@@ -114,10 +145,7 @@ export class AdmobService {
 
   /**
    * Shows the rewarded video and resolves true ONLY when AdMob's own
-   * OnUserEarnedReward callback fires. Never resolves true optimistically —
-   * closing the ad early (Dismissed), a show failure, or an ad already in
-   * flight (re-entrant call) all resolve false. This is the one method every
-   * coin/unlock grant in the app must gate on.
+   * OnUserEarnedReward callback fires.
    */
   async showRewarded(): Promise<boolean> {
     if (!this.isSupported || this.rewardedShowing) return false;
@@ -144,9 +172,6 @@ export class AdmobService {
         resolve(granted);
       };
 
-      // showRewardVideoAd()'s promise only resolves via AdMob's own reward
-      // callback — if the user closes the ad early, it never resolves on its
-      // own, so we race it against the Dismissed/FailedToShow events too.
       handles.push(AdMob.addListener(RewardAdPluginEvents.Dismissed, () => finish(false)));
       handles.push(AdMob.addListener(RewardAdPluginEvents.FailedToShow, () => finish(false)));
 

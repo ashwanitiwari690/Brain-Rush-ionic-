@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent,IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { arrowBack,createOutline,home,gameController,podium,personCircle,lockClosed,star,checkmark,close } from 'ionicons/icons';
+import { arrowBack, createOutline, home, gameController, podium, personCircle, lockClosed, star, checkmark, close } from 'ionicons/icons';
 import { GameService } from '../../services/game.service';
 import { RewardApiService, RedeemGameRewardData } from '../../services/reward-api.service';
 import { TranslatePipe } from '../../services/translate.pipe';
@@ -19,7 +19,14 @@ interface RedeemKeySnapshot {
 
 const IDEMPOTENCY_STORAGE_KEY = 'brain-rush-redeem-idempotency';
 
-@Component({selector:'app-profile',standalone:true,imports:[CommonModule,FormsModule,IonContent,IonIcon,TranslatePipe],templateUrl:'profile.page.html',styleUrls:['profile.page.scss']})
+@Component({
+  selector: 'app-profile',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, IonContent, IonIcon, TranslatePipe],
+  templateUrl: 'profile.page.html',
+  styleUrls: ['profile.page.scss']
+})
 export class ProfilePage {
   editing=false; showStats=false; draft={name:'',avatar:'',bio:''};
   withdrawNumber = '';
@@ -33,7 +40,14 @@ export class ProfilePage {
   /** Blocks resubmission of a redemption the backend already confirmed as processed. */
   private duplicateSnapshot: { coins: number; mobileNumber: string } | null = null;
 
-  constructor(public game:GameService,private router:Router,private rewardApi: RewardApiService){addIcons({arrowBack,createOutline,home,gameController,podium,personCircle,lockClosed,star,checkmark,close});}
+  constructor(
+    public game: GameService,
+    private router: Router,
+    private rewardApi: RewardApiService,
+    private cdr: ChangeDetectorRef
+  ) {
+    addIcons({ arrowBack, createOutline, home, gameController, podium, personCircle, lockClosed, star, checkmark, close });
+  }
 
   go(p:string){this.router.navigateByUrl(p)}
   edit(){this.draft={...this.game.profile};this.editing=true;}
@@ -83,6 +97,7 @@ export class ProfilePage {
     this.redeemResult = { coins: response.coinsRedeemed, rupees: response.amountCredited };
     this.redeemState = 'success';
     this.clearIdempotencyKey();
+    this.cdr.markForCheck();
   }
 
   private handleRedeemFailure(errorCode?: string, message?: string): void {
@@ -91,10 +106,12 @@ export class ProfilePage {
     if (errorCode === 'DUPLICATE_CONVERSION') {
       this.duplicateSnapshot = { coins: this.game.coins, mobileNumber: this.withdrawNumber };
       this.withdrawMessage = '';
+      this.cdr.markForCheck();
       return;
     }
     // Coins were never deducted locally, so a network/backend failure is a safe, retryable state.
     this.withdrawMessage = message || '';
+    this.cdr.markForCheck();
   }
 
   dismissRedeemResult(): void {
