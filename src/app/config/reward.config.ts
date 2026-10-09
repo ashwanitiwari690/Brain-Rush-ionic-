@@ -18,5 +18,5 @@ export const REWARD_CONFIG = {
   // Matches the Game.minimumCoins default seeded for BRAIN_RUSH. The
   // backend is still authoritative and re-validates this on every request;
   // GET /api/games returns the live value if it's ever changed by an admin.
-  minRedeemCoins: 1000
+  minRedeemCoins: 100
 } as const;

@@ -6,11 +6,11 @@ export class AudioService {
   musicEnabled = true;
   hapticsEnabled = true;
 
-  // Master levels are intentionally stronger than the previous version.
+  // Master levels boosted for clear, punchy mobile audio.
   // The compressor keeps louder effects from clipping while preserving punch.
-  private soundVolume = 0.22;
-  private musicVolume = 0.14;
-  private masterVolume = 0.85;
+  private soundVolume = 0.55;
+  private musicVolume = 0.38;
+  private masterVolume = 1.0;
 
   private ctx?: AudioContext;
   private masterGain?: GainNode;
@@ -38,9 +38,9 @@ export class AudioService {
         // Master chain: all game audio passes through a compressor and
         // master gain so the sound is louder and more consistent.
         this.compressor = this.ctx.createDynamicsCompressor();
-        this.compressor.threshold.value = -18;
-        this.compressor.knee.value = 18;
-        this.compressor.ratio.value = 4;
+        this.compressor.threshold.value = -12;
+        this.compressor.knee.value = 12;
+        this.compressor.ratio.value = 3;
         this.compressor.attack.value = 0.003;
         this.compressor.release.value = 0.18;
 
@@ -110,32 +110,32 @@ export class AudioService {
   }
 
   click() {
-    this.tone(620, 0.07, 'sine', 0.16);
-    this.tone(930, 0.045, 'triangle', 0.08, false, 4);
+    this.tone(620, 0.07, 'sine', 0.42);
+    this.tone(930, 0.045, 'triangle', 0.22, false, 4);
     this.haptic(8);
   }
 
   correct() {
-    this.tone(740, 0.10, 'sine', 0.22);
+    this.tone(740, 0.10, 'sine', 0.55);
     // Deferred tone only, no Angular state involved — keep it out of the zone
     // so it doesn't schedule an extra change-detection pass on every correct
     // answer (which, in fast gameplay, can be many times per second).
     this.zone.runOutsideAngular(() => {
-      setTimeout(() => this.tone(980, 0.14, 'sine', 0.18), 45);
+      setTimeout(() => this.tone(980, 0.14, 'sine', 0.46), 45);
     });
     this.haptic(12);
   }
 
   wrong() {
-    this.tone(180, 0.18, 'sawtooth', 0.13);
-    this.tone(145, 0.13, 'triangle', 0.08, false, -6);
+    this.tone(180, 0.18, 'sawtooth', 0.38);
+    this.tone(145, 0.13, 'triangle', 0.24, false, -6);
     this.haptic(28);
   }
 
   success() {
     this.zone.runOutsideAngular(() => {
       [660, 830, 1040, 1320].forEach((f, i) =>
-        setTimeout(() => this.tone(f, 0.16, 'sine', 0.17), i * 65)
+        setTimeout(() => this.tone(f, 0.16, 'sine', 0.45), i * 65)
       );
     });
     this.haptic([15, 20, 15]);
@@ -144,7 +144,7 @@ export class AudioService {
   gameOver() {
     this.zone.runOutsideAngular(() => {
       [440, 330, 220].forEach((f, i) =>
-        setTimeout(() => this.tone(f, 0.2, 'triangle', 0.14), i * 90)
+        setTimeout(() => this.tone(f, 0.2, 'triangle', 0.40), i * 90)
       );
     });
   }
