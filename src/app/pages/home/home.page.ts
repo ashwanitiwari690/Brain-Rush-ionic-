@@ -7,7 +7,7 @@ import { RewardAdService } from '../../services/reward-ad.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { addIcons } from 'ionicons';
-import { settings, gameController, home, podium, personCircle, play, calendar, timer, lockClosed, checkmarkCircle, playCircle, closeCircle, gift } from 'ionicons/icons';
+import { settings, gameController, home, trophy, personCircle, play, calendar, timer, lockClosed, checkmarkCircle, playCircle, closeCircle, gift } from 'ionicons/icons';
 
 @Component({
   selector: 'app-home',
@@ -41,7 +41,7 @@ export class HomePage implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {
     addIcons({
-      settings, gameController, home, podium, personCircle, play, calendar, timer,
+      settings, gameController, home, trophy, personCircle, play, calendar, timer,
       lockClosed, checkmarkCircle, playCircle, closeCircle, gift
     });
   }

@@ -17,7 +17,7 @@
                 </div>
             </section>
             <div class="stat-grid">
-                <div class="card stat"><small>{{'profile.bestScore' | translate}}</small><strong>{{game.bestScore |
+                <div class="card stat"><small>{{'common.totalScore' | translate}}</small><strong>{{game.totalScore |
                         number}}</strong></div>
                 <div class="card stat"><small>{{'profile.gamesPlayed' |
                         translate}}</small><strong>{{game.gamesPlayed}}</strong></div>
@@ -40,7 +40,7 @@
                 <div class="badge unlocked">⭐<span>{{'profile.level' | translate}} {{game.level}}</span></div>
             </section>
             <section *ngIf="showStats" class="card stats-panel">
-                <div><span>{{'profile.bestScore' | translate}}</span><b>{{game.bestScore | number}}</b></div>
+                <div><span>{{'common.totalScore' | translate}}</span><b>{{game.totalScore | number}}</b></div>
                 <div><span>{{'profile.totalGames' | translate}}</span><b>{{game.gamesPlayed}}</b></div>
                 <div><span>{{'profile.lifetimeAccuracy' | translate}}</span><b>{{game.accuracy}}%</b></div>
                 <div><span>{{'common.coins' | translate}}</span><b>🪙 {{game.coins | number}}</b></div>
@@ -125,8 +125,8 @@
             <nav class="bottom-nav"><button class="nav-item" (click)="go('/home')"><ion-icon
                         name="home"></ion-icon>{{'common.home' | translate}}</button><button class="nav-item"
                     (click)="go('/game')"><ion-icon name="game-controller"></ion-icon>{{'common.play' |
-                    translate}}</button><button class="nav-item" (click)="go('/leaderboard')"><ion-icon
-                        name="podium"></ion-icon>{{'common.ranks' | translate}}</button><button
+                    translate}}</button><button class="nav-item" (click)="go('/achievements')"><ion-icon
+                        name="trophy"></ion-icon>{{'achievements.title' | translate}}</button><button
                     class="nav-item active"><ion-icon name="person-circle"></ion-icon>{{'common.profile' |
                     translate}}</button></nav>
         </div>

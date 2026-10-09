@@ -36,7 +36,7 @@ export const routes: Routes = [
   { path: 'home', loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage) },
   { path: 'game', loadComponent: () => import('./pages/game/game.page').then(m => m.GamePage) },
   { path: 'result', loadComponent: () => import('./pages/result/result.page').then(m => m.ResultPage) },
-  { path: 'leaderboard', loadComponent: () => import('./pages/leaderboard/leaderboard.page').then(m => m.LeaderboardPage) },
+  { path: 'leaderboard', pathMatch: 'full', redirectTo: 'achievements' },
   { path: 'profile', loadComponent: () => import('./pages/profile/profile.page').then(m => m.ProfilePage) },
   { path: 'achievements', loadComponent: () => import('./pages/achievements/achievements.page').then(m => m.AchievementsPage) },
   { path: 'daily-challenge', loadComponent: () => import('./pages/daily-challenge/daily-challenge.page').then(m => m.DailyChallengePage) },

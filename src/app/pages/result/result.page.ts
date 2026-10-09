@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { play, home, trophy, arrowForward, star, cash, playCircle } from 'ionicons/icons';
+import { play, home, trophy, arrowForward, star, cash, playCircle, calendar } from 'ionicons/icons';
 import { GameService } from '../../services/game.service';
 import { RewardAdService } from '../../services/reward-ad.service';
 import { LanguageService } from '../../services/language.service';
@@ -28,11 +28,7 @@ export class ResultPage {
     private language: LanguageService,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ play, home, trophy, arrowForward, star, cash, playCircle });
-  }
-
-  get playerRank() {
-    return this.game.leaders.length ? this.game.leaders[this.game.leaders.length - 1].rank : 15;
+    addIcons({ play, home, trophy, arrowForward, star, cash, playCircle, calendar });
   }
 
   go(p: string) { this.router.navigateByUrl(p); }
