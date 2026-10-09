@@ -16,12 +16,14 @@ export const ADMOB_CONFIG = {
 
   // Google's official sample ad unit IDs (safe to test with on any device)
   testAdUnits: {
+    banner: 'ca-app-pub-3940256099942544/6300978111',
     interstitial: 'ca-app-pub-3940256099942544/1033173712',
     rewarded: 'ca-app-pub-3940256099942544/5224354917'
   },
 
   // Replace these with your real AdMob Ad Unit IDs from https://apps.admob.com
   productionAdUnits: {
+    banner: 'ca-app-pub-3940256099942544/6300978111',       // Replace with your live Banner ID
     interstitial: 'ca-app-pub-3940256099942544/1033173712', // Replace with your live Interstitial ID
     rewarded: 'ca-app-pub-3940256099942544/5224354917'       // Replace with your live Rewarded ID
   },

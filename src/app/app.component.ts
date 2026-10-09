@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { AudioService } from './services/audio.service';
 import { AppVerificationService } from './services/app-verification.service';
@@ -37,6 +39,8 @@ import { ConnectivityService } from './services/connectivity.service';
   `]
 })
 export class AppComponent implements OnInit, OnDestroy {
+  private routerSub?: Subscription;
+
   private firstInteraction = () => {
     this.audio.unlock();
     window.removeEventListener('pointerdown', this.firstInteraction);
@@ -44,7 +48,25 @@ export class AppComponent implements OnInit, OnDestroy {
     window.removeEventListener('keydown', this.firstInteraction);
   };
 
+  private onConnectivityChange = () => {
+    this.updateBannerVisibility();
+  };
+
+  private updateBannerVisibility(): void {
+    if (!this.connectivity.online) {
+      void this.admob.hideBanner();
+      return;
+    }
+    const currentUrl = this.router.url.split('?')[0];
+    if (currentUrl.startsWith('/game')) {
+      void this.admob.hideBanner();
+    } else {
+      void this.admob.showBanner();
+    }
+  }
+
   constructor(
+    private router: Router,
     private audio: AudioService,
     private appVerification: AppVerificationService,
     private admob: AdmobService,
@@ -57,11 +79,20 @@ export class AppComponent implements OnInit, OnDestroy {
     // otherwise — see APP_PROMOTION_VERIFICATION_INTEGRATION.md.
     void this.appVerification.confirmAppPromotion();
 
-    // No persistent banner — this app only shows interstitial/rewarded ads
-    // (an always-on banner risked covering the bottom nav). Still initialize
-    // AdMob at boot so the interstitial/rewarded ads are preloaded and ready
-    // by the time the player reaches a "Start Challenge" tap or a reward flow.
     void this.admob.initialize();
+
+    // Persistent banner on every screen except live gameplay (/game), where it would
+    // eat into the challenge tap area — and hidden while offline.
+    this.routerSub = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.updateBannerVisibility();
+      });
+
+    window.addEventListener('online', this.onConnectivityChange);
+    window.addEventListener('offline', this.onConnectivityChange);
+
+    this.updateBannerVisibility();
 
     // Try immediately for native/webviews where autoplay is permitted.
     if (this.audio.musicEnabled) {
@@ -76,6 +107,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.routerSub?.unsubscribe();
+    window.removeEventListener('online', this.onConnectivityChange);
+    window.removeEventListener('offline', this.onConnectivityChange);
     window.removeEventListener('pointerdown', this.firstInteraction);
     window.removeEventListener('touchstart', this.firstInteraction);
     window.removeEventListener('keydown', this.firstInteraction);

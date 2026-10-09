@@ -91,3 +91,74 @@ execFileSync(
   { stdio: 'inherit' }
 );
 console.log('[prepare-android] Regenerated Android app icon from resources/icon.png.');
+
+// Ensure styles.xml has dark navigation and status bar colors
+const stylesPath = path.resolve('android/app/src/main/res/values/styles.xml');
+if (fs.existsSync(stylesPath)) {
+  let styles = fs.readFileSync(stylesPath, 'utf8');
+  if (!styles.includes('android:navigationBarColor')) {
+    styles = styles.replace('</style>',
+      '        <item name="android:statusBarColor">@android:color/transparent</item>\n' +
+      '        <item name="android:navigationBarColor">@android:color/transparent</item>\n' +
+      '        <item name="android:windowDrawsSystemBarBackgrounds">true</item>\n' +
+      '        <item name="android:windowLightStatusBar">false</item>\n' +
+      '        <item name="android:windowLightNavigationBar">false</item>\n' +
+      '    </style>');
+    fs.writeFileSync(stylesPath, styles);
+    console.log('[prepare-android] Set dark system bar colors in styles.xml.');
+  }
+}
+
+// Ensure MainActivity.java has immersive sticky mode configured
+const mainActivityPath = path.resolve('android/app/src/main/java/com/admobility/brainrush/MainActivity.java');
+if (fs.existsSync(mainActivityPath)) {
+  let mainActivity = fs.readFileSync(mainActivityPath, 'utf8');
+  if (!mainActivity.includes('setupImmersiveMode')) {
+    mainActivity = `package com.admobility.brainrush;
+
+import android.os.Bundle;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+import com.getcapacitor.BridgeActivity;
+
+public class MainActivity extends BridgeActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setupImmersiveMode();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupImmersiveMode();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            setupImmersiveMode();
+        }
+    }
+
+    private void setupImmersiveMode() {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        WindowInsetsControllerCompat controller =
+            WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller != null) {
+            controller.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            );
+            controller.hide(WindowInsetsCompat.Type.systemBars());
+        }
+    }
+}
+`;
+    fs.writeFileSync(mainActivityPath, mainActivity);
+    console.log('[prepare-android] Ensured immersive sticky mode in MainActivity.java.');
+  }
+}

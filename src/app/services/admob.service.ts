@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Capacitor, PluginListenerHandle } from '@capacitor/core';
-import { AdMob, RewardAdPluginEvents, AdmobConsentStatus } from '@capacitor-community/admob';
+import {
+  AdMob,
+  RewardAdPluginEvents,
+  AdmobConsentStatus,
+  BannerAdOptions,
+  BannerAdPluginEvents,
+  BannerAdPosition,
+  BannerAdSize
+} from '@capacitor-community/admob';
 import { AD_UNIT_IDS, ADMOB_CONFIG, INTERSTITIAL_EVERY_N_ROUNDS } from '../config/admob.config';
 
 /**
@@ -12,6 +20,8 @@ export class AdmobService {
   readonly isSupported = Capacitor.isNativePlatform();
 
   private initPromise?: Promise<void>;
+  private bannerVisible = false;
+  private bannerListenersInitialized = false;
 
   private interstitialReady = false;
   private interstitialLoading = false;
@@ -21,6 +31,68 @@ export class AdmobService {
   private rewardedReady = false;
   private rewardedLoading = false;
   private rewardedShowing = false;
+
+  // ---------------------------------------------------------------------
+  // Banner
+  // ---------------------------------------------------------------------
+
+  /** Shows the persistent banner at the bottom. Safe to call repeatedly — already visible is a no-op. */
+  async showBanner(): Promise<void> {
+    if (!this.isSupported) return;
+    await this.initialize();
+    if (this.bannerVisible) return;
+
+    if (!this.bannerListenersInitialized) {
+      this.bannerListenersInitialized = true;
+      void AdMob.addListener(BannerAdPluginEvents.SizeChanged, (info) => this.setBannerSpace(info.height));
+      void AdMob.addListener(BannerAdPluginEvents.FailedToLoad, () => this.setBannerSpace(0));
+    }
+
+    const options: BannerAdOptions = {
+      adId: AD_UNIT_IDS.banner,
+      adSize: BannerAdSize.ADAPTIVE_BANNER,
+      position: BannerAdPosition.BOTTOM_CENTER,
+      margin: 0,
+    };
+    try {
+      this.bannerVisible = true;
+      // Pre-set standard adaptive banner height (50px) to prevent jump before event fires
+      this.setBannerSpace(50);
+      await AdMob.showBanner(options);
+    } catch {
+      this.bannerVisible = false;
+      this.setBannerSpace(0);
+    }
+  }
+
+  /** Hides the persistent banner (e.g. entering gameplay, or going offline). */
+  async hideBanner(): Promise<void> {
+    if (!this.isSupported || !this.bannerVisible) return;
+    this.bannerVisible = false;
+    this.setBannerSpace(0);
+    try {
+      await AdMob.hideBanner();
+    } catch {
+      /* nothing to clean up */
+    }
+  }
+
+  /** Exposes the banner's live height as CSS vars so bottom-nav and page spacers adjust seamlessly. */
+  private setBannerSpace(heightPx: number): void {
+    const raw = Math.max(0, heightPx);
+    // Standard mobile adaptive banner is 50-60dp. If raw > 90, it is in physical device pixels: convert to CSS pixels.
+    const dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
+    const space = raw > 90 ? Math.round(raw / dpr) : raw;
+
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--ad-banner-space', `${space}px`);
+      if (space > 0) {
+        document.body.classList.add('has-ad-banner');
+      } else {
+        document.body.classList.remove('has-ad-banner');
+      }
+    }
+  }
 
   initialize(): Promise<void> {
     if (!this.isSupported) return Promise.resolve();

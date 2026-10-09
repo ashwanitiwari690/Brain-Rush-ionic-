@@ -83,7 +83,7 @@
                         <small>{{ 'settings.withdrawSuccessDesc' | translate:{ coins: redeemResult.coins, rupees: redeemResult.rupees } }}</small>
                     </div>
                 </div>
-                <button type="button" class="withdraw-btn" (click)="dismissRedeemResult()">{{ 'common.save' | translate }}</button>
+                <button type="button" class="withdraw-btn" (click)="dismissRedeemResult()">{{ 'settings.withdrawDone' | translate }}</button>
                 } @else {
                 <label class="withdraw-label" for="profile-withdraw-number">
                     {{ 'settings.withdrawNumber' | translate }}
