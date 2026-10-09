@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { arrowBack, createOutline, home, gameController, podium, personCircle, lockClosed, star, checkmark, close } from 'ionicons/icons';
+import { arrowBack, createOutline, home, gameController, trophy, personCircle, lockClosed, star, checkmark, close } from 'ionicons/icons';
 import { GameService } from '../../services/game.service';
 import { RewardApiService, RedeemGameRewardData } from '../../services/reward-api.service';
 import { TranslatePipe } from '../../services/translate.pipe';
@@ -46,7 +46,7 @@ export class ProfilePage {
     private rewardApi: RewardApiService,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ arrowBack, createOutline, home, gameController, podium, personCircle, lockClosed, star, checkmark, close });
+    addIcons({ arrowBack, createOutline, home, gameController, trophy, personCircle, lockClosed, star, checkmark, close });
   }
 
   go(p:string){this.router.navigateByUrl(p)}

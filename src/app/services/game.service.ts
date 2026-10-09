@@ -139,16 +139,7 @@ export class GameService {
   history: GameHistory[] = [];
   daily: DailyState = this.createDailyState();
 
-  private demoLeaders: Leader[] = [
-    { rank: 1, name: 'Alex', score: 12450, avatar: '🧑‍🚀', playedAt: Date.now() - 2 * 60 * 60 * 1000, mode: 'Math Rush' },
-    { rank: 2, name: 'Rahul', score: 11820, avatar: '🧑‍🎤', playedAt: Date.now() - 4 * 60 * 60 * 1000, mode: 'Reaction Tap' },
-    { rank: 3, name: 'Priya', score: 10980, avatar: '👩‍🚀', playedAt: Date.now() - 7 * 60 * 60 * 1000, mode: 'Memory' },
-    { rank: 4, name: 'Maya', score: 10540, avatar: '👩‍🎨', playedAt: Date.now() - 2 * 24 * 60 * 60 * 1000, mode: 'Color Trap' },
-    { rank: 5, name: 'Arjun', score: 10120, avatar: '🧑‍💻', playedAt: Date.now() - 5 * 24 * 60 * 60 * 1000, mode: 'Number Sequence' },
-    { rank: 15, name: 'Pavel', score: 8420, avatar: '🧑‍🚀', playedAt: Date.now() - 60 * 60 * 1000, mode: 'Math Rush' }
-  ];
-
-  leaders: Leader[] = [...this.demoLeaders];
+  leaders: Leader[] = [];
 
   constructor() {
     this.load();
@@ -385,23 +376,12 @@ export class GameService {
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
   }
 
-  private rebuildLeaderboard(period: 'today' | 'week' | 'all' = 'all'): void {
-    const now = Date.now();
-    const windowMs = period === 'today' ? 24 * 60 * 60 * 1000 : period === 'week' ? 7 * 24 * 60 * 60 * 1000 : Number.MAX_SAFE_INTEGER;
-    const demo = this.demoLeaders.filter(p => now - p.playedAt <= windowMs && p.name !== this.profile.name && p.name !== 'Pavel');
-    const mine = this.history.filter(h => now - h.playedAt <= windowMs).map(h => ({
-      rank: 0, name: this.profile.name, score: h.score, avatar: this.profile.avatar, playedAt: h.playedAt, mode: h.mode
-    }));
-    const fallbackMine: Leader = { rank: 0, name: this.profile.name, score: this.lastResult.score, avatar: this.profile.avatar, playedAt: now, mode: this.lastResult.mode };
-    const bestMine = mine.length ? mine.reduce((best, item) => item.score > best.score ? item : best) : fallbackMine;
-    this.leaders = [...demo.filter(p => p.name !== this.profile.name), ...(bestMine ? [bestMine] : [])]
-      .sort((a, b) => b.score - a.score).map((p, index) => ({ ...p, rank: index + 1 }));
+  private rebuildLeaderboard(_period: 'today' | 'week' | 'all' = 'all'): void {
+    this.leaders = [];
   }
 
-  getLeaderboard(period: 'today' | 'week' | 'all' = 'today', search = ''): Leader[] {
-    this.rebuildLeaderboard(period);
-    const term = search.trim().toLowerCase();
-    return term ? this.leaders.filter(p => p.name.toLowerCase().includes(term)) : this.leaders;
+  getLeaderboard(_period: 'today' | 'week' | 'all' = 'today', _search = ''): Leader[] {
+    return [];
   }
 
   completeGame(

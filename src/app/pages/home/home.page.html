@@ -13,7 +13,7 @@
         </div>
         <div class="card stat"><small>{{'common.totalScore' | translate}}</small><strong>{{game.totalScore |
             number}}</strong></div>
-        <div class="card stat"><small>{{'common.best' | translate}}</small><strong>{{game.bestScore | number}}</strong>
+        <div class="card stat"><small>{{'common.level' | translate}}</small><strong>⭐ {{game.level}}</strong>
         </div>
       </div>
       <section class="hero card">
@@ -117,8 +117,8 @@
       <nav class="bottom-nav"><button class="nav-item active" (click)="go('/home')"><ion-icon
             name="home"></ion-icon>{{'common.home' | translate}}</button><button class="nav-item"
           (click)="go('/game')"><ion-icon name="game-controller"></ion-icon>{{'common.play' |
-          translate}}</button><button class="nav-item" (click)="go('/leaderboard')"><ion-icon
-            name="podium"></ion-icon>{{'common.ranks' | translate}}</button><button class="nav-item"
+          translate}}</button><button class="nav-item" (click)="go('/achievements')"><ion-icon
+            name="trophy"></ion-icon>{{'achievements.title' | translate}}</button><button class="nav-item"
           (click)="go('/profile')"><ion-icon name="person-circle"></ion-icon>{{'common.profile' | translate}}</button>
       </nav>
     </div>

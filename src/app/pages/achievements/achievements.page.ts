@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { arrowBack, lockClosed, trophy, flame, flash, star, playCircle } from 'ionicons/icons';
+import { arrowBack, lockClosed, trophy, flame, flash, star, playCircle, home, gameController, personCircle } from 'ionicons/icons';
 import { AchievementKey, GameService } from '../../services/game.service';
 import { RewardAdService } from '../../services/reward-ad.service';
 import { TranslatePipe } from '../../services/translate.pipe';
@@ -37,7 +37,7 @@ export class AchievementsPage {
     private rewardAd: RewardAdService,
     private cdr: ChangeDetectorRef
   ) {
-    addIcons({ arrowBack, lockClosed, trophy, flame, flash, star, playCircle });
+    addIcons({ arrowBack, lockClosed, trophy, flame, flash, star, playCircle, home, gameController, personCircle });
   }
 
   get items(): Achievement[] {
@@ -93,7 +93,7 @@ export class AchievementsPage {
     this.cdr.markForCheck();
   }
 
-  go(): void {
-    this.router.navigateByUrl('/home');
+  go(path = '/home'): void {
+    this.router.navigateByUrl(path);
   }
 }

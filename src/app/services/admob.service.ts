@@ -21,6 +21,7 @@ export class AdmobService {
 
   private initPromise?: Promise<void>;
   private bannerVisible = false;
+  private bannerCreated = false;
   private bannerListenersInitialized = false;
 
   private interstitialReady = false;
@@ -36,7 +37,7 @@ export class AdmobService {
   // Banner
   // ---------------------------------------------------------------------
 
-  /** Shows the persistent banner at the bottom. Safe to call repeatedly — already visible is a no-op. */
+  /** Shows the persistent banner at the bottom. Safe to call repeatedly. */
   async showBanner(): Promise<void> {
     if (!this.isSupported) return;
     await this.initialize();
@@ -44,8 +45,33 @@ export class AdmobService {
 
     if (!this.bannerListenersInitialized) {
       this.bannerListenersInitialized = true;
-      void AdMob.addListener(BannerAdPluginEvents.SizeChanged, (info) => this.setBannerSpace(info.height));
-      void AdMob.addListener(BannerAdPluginEvents.FailedToLoad, () => this.setBannerSpace(0));
+      void AdMob.addListener(BannerAdPluginEvents.SizeChanged, (info) => {
+        if (info.height > 0) {
+          this.setBannerSpace(info.height);
+          this.bannerVisible = true;
+        } else {
+          this.setBannerSpace(0);
+          this.bannerVisible = false;
+        }
+      });
+      void AdMob.addListener(BannerAdPluginEvents.FailedToLoad, () => {
+        this.bannerVisible = false;
+        this.setBannerSpace(0);
+      });
+      void AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
+        this.bannerVisible = true;
+      });
+    }
+
+    if (this.bannerCreated) {
+      try {
+        await AdMob.resumeBanner();
+        this.bannerVisible = true;
+        return;
+      } catch {
+        // If native resume fails, recreate fresh below
+        this.bannerCreated = false;
+      }
     }
 
     const options: BannerAdOptions = {
@@ -55,10 +81,9 @@ export class AdmobService {
       margin: 0,
     };
     try {
-      this.bannerVisible = true;
-      // Pre-set standard adaptive banner height (50px) to prevent jump before event fires
-      this.setBannerSpace(50);
       await AdMob.showBanner(options);
+      this.bannerCreated = true;
+      this.bannerVisible = true;
     } catch {
       this.bannerVisible = false;
       this.setBannerSpace(0);
@@ -67,9 +92,9 @@ export class AdmobService {
 
   /** Hides the persistent banner (e.g. entering gameplay, or going offline). */
   async hideBanner(): Promise<void> {
-    if (!this.isSupported || !this.bannerVisible) return;
     this.bannerVisible = false;
     this.setBannerSpace(0);
+    if (!this.isSupported) return;
     try {
       await AdMob.hideBanner();
     } catch {
