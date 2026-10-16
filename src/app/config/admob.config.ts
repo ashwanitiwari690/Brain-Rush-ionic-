@@ -12,7 +12,7 @@
 
 export const ADMOB_CONFIG = {
   // Set to false when deploying with your live production AdMob units
-  isTesting: true,
+  isTesting: false,
 
   // Google's official sample ad unit IDs (safe to test with on any device)
   testAdUnits: {
@@ -23,9 +23,9 @@ export const ADMOB_CONFIG = {
 
   // Replace these with your real AdMob Ad Unit IDs from https://apps.admob.com
   productionAdUnits: {
-    banner: 'ca-app-pub-3940256099942544/6300978111',       // Replace with your live Banner ID
-    interstitial: 'ca-app-pub-3940256099942544/1033173712', // Replace with your live Interstitial ID
-    rewarded: 'ca-app-pub-3940256099942544/5224354917'       // Replace with your live Rewarded ID
+    banner: 'ca-app-pub-2030586584805301/9281247114',
+    interstitial: 'ca-app-pub-2030586584805301/2224884172',
+    rewarded: 'ca-app-pub-2030586584805301/5066669936'
   },
 
   /** Optional: Test Device IDs for AdMob (avoids invalid clicks during internal testing) */

@@ -36,17 +36,15 @@ if (fs.existsSync(stringsPath)) {
   if (!strings.includes('name="admob_app_id"')) {
     strings = strings.replace('</resources>',
       '    <!--\n' +
-      '      AdMob App ID. This is currently Google\'s official public TEST App ID\n' +
-      '      (safe to ship during development). Before a production release, create\n' +
-      '      this app\'s own App ID in the AdMob console (Apps > Add app) and replace\n' +
-      '      the value below — do not reuse another app\'s App ID, that misattributes\n' +
-      '      revenue and is against AdMob policy. Ad UNIT ids are configured\n' +
-      '      separately in src/app/config/admob.config.ts.\n' +
+      '      AdMob App ID.\n' +
       '    -->\n' +
-      '    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>\n' +
+      '    <string name="admob_app_id">ca-app-pub-2030586584805301~2843907256</string>\n' +
       '</resources>');
     fs.writeFileSync(stringsPath, strings);
-    console.log('[prepare-android] Added AdMob test App ID to strings.xml.');
+    console.log('[prepare-android] Added AdMob App ID to strings.xml.');
+  } else {
+    strings = strings.replace(/<string name="admob_app_id">.*?<\/string>/, '<string name="admob_app_id">ca-app-pub-2030586584805301~2843907256</string>');
+    fs.writeFileSync(stringsPath, strings);
   }
 }
 
