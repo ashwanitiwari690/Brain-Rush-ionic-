@@ -37,4 +37,10 @@ export const AD_UNIT_IDS = ADMOB_CONFIG.isTesting
   : ADMOB_CONFIG.productionAdUnits;
 
 /** Show interstitials at most once every N completed game rounds (policy-safe pacing). */
-export const INTERSTITIAL_EVERY_N_ROUNDS = 2;
+export const INTERSTITIAL_EVERY_N_ROUNDS = 3;
+
+/** Minimum time (in milliseconds) between any two interstitial ads (prevents ad spam). */
+export const INTERSTITIAL_COOLDOWN_MS = 90_000; // 90 seconds
+
+/** Minimum time (in milliseconds) after a rewarded ad before showing an interstitial (prevents double-ad fatigue). */
+export const REWARDED_SUPPRESS_INTERSTITIAL_MS = 90_000; // 90 seconds

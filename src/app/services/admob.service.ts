@@ -9,7 +9,13 @@ import {
   BannerAdPosition,
   BannerAdSize
 } from '@capacitor-community/admob';
-import { AD_UNIT_IDS, ADMOB_CONFIG, INTERSTITIAL_EVERY_N_ROUNDS } from '../config/admob.config';
+import {
+  AD_UNIT_IDS,
+  ADMOB_CONFIG,
+  INTERSTITIAL_EVERY_N_ROUNDS,
+  INTERSTITIAL_COOLDOWN_MS,
+  REWARDED_SUPPRESS_INTERSTITIAL_MS
+} from '../config/admob.config';
 
 /**
  * Service managing Google AdMob ad lifecycles and Google UMP Consent Management.
@@ -28,6 +34,8 @@ export class AdmobService {
   private interstitialLoading = false;
   private interstitialShowing = false;
   private roundsSinceInterstitial = 0;
+  private lastInterstitialTime = 0;
+  private lastRewardedTime = 0;
 
   private rewardedReady = false;
   private rewardedLoading = false;
@@ -183,22 +191,35 @@ export class AdmobService {
   }
 
   /**
-   * Call at a natural breakpoint (e.g. leaving a finished game round). Shows
-   * an interstitial only every INTERSTITIAL_EVERY_N_ROUNDS calls, so ads stay
-   * frequent without breaching AdMob's full-screen-ad frequency policies.
+   * Call ONLY at a natural breakpoint (leaving a finished game round).
+   * Shows an interstitial only when all policy-safe pacing conditions are met:
+   * 1. No rewarded ad was watched recently (within REWARDED_SUPPRESS_INTERSTITIAL_MS).
+   * 2. Enough time has elapsed since the last interstitial (INTERSTITIAL_COOLDOWN_MS).
+   * 3. Exactly INTERSTITIAL_EVERY_N_ROUNDS completed rounds have elapsed.
    */
-  async maybeShowInterstitialAtBreakpoint(): Promise<void> {
-    if (!this.isSupported) return;
+  async maybeShowInterstitialAtBreakpoint(): Promise<boolean> {
+    if (!this.isSupported) return false;
+
+    // Suppress if player recently watched a rewarded video (prevents double-ad fatigue)
+    if (this.lastRewardedTime > 0 && Date.now() - this.lastRewardedTime < REWARDED_SUPPRESS_INTERSTITIAL_MS) {
+      return false;
+    }
+
+    // Minimum cooldown time between any two interstitials
+    if (this.lastInterstitialTime > 0 && Date.now() - this.lastInterstitialTime < INTERSTITIAL_COOLDOWN_MS) {
+      return false;
+    }
+
+    // Pacing: only show every N completed rounds
     this.roundsSinceInterstitial++;
-    if (this.roundsSinceInterstitial < INTERSTITIAL_EVERY_N_ROUNDS) return;
+    if (this.roundsSinceInterstitial < INTERSTITIAL_EVERY_N_ROUNDS) return false;
+
     this.roundsSinceInterstitial = 0;
-    await this.showInterstitial();
+    return await this.showInterstitial();
   }
 
   /**
-   * Shows the interstitial if one is ready (or can be loaded within a short
-   * timeout) and resolves once it's dismissed. Gives up after ~4s so a slow
-   * or unavailable ad never blocks navigation. Returns true only if an ad was shown.
+   * Shows the interstitial if one is ready and resolves once it's dismissed.
    */
   async showInterstitial(): Promise<boolean> {
     if (!this.isSupported || this.interstitialShowing) return false;
@@ -215,6 +236,7 @@ export class AdmobService {
       this.interstitialReady = false;
       try {
         await AdMob.showInterstitial();
+        this.lastInterstitialTime = Date.now();
         void this.preloadInterstitial();
         return true;
       } catch {
@@ -265,6 +287,9 @@ export class AdmobService {
         settled = true;
         cleanup();
         this.rewardedShowing = false;
+        if (granted) {
+          this.lastRewardedTime = Date.now();
+        }
         void this.preloadRewarded();
         resolve(granted);
       };

@@ -69,8 +69,6 @@ export class GamePage implements OnInit, OnDestroy {
   isWatchingContinueAd = false;
   continueAdError = false;
 
-  /** True while the pre-round interstitial is loading/showing, gating the "Start Challenge" tap. */
-  startingChallenge = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -130,19 +128,8 @@ export class GamePage implements OnInit, OnDestroy {
   get timeLimit(): number { return Math.max(35, 60 - (this.level - 1) * 3); }
   get startingLives(): number { return this.level >= 9 ? 2 : 3; }
 
-  /**
-   * Shows a full-screen interstitial before every round starts, then begins
-   * play once it's dismissed (or immediately if no ad was available/ready —
-   * see AdmobService.showInterstitial's ~4s timeout). The button is disabled
-   * for the duration so a slow ad load can't be double-tapped.
-   */
-  async start(): Promise<void> {
-    if (this.startingChallenge) return;
-    this.startingChallenge = true;
-    this.cdr.markForCheck();
+  start(): void {
     this.audio.click();
-    await this.admob.showInterstitial();
-    this.startingChallenge = false;
     this.beginRound();
   }
 
@@ -545,11 +532,12 @@ export class GamePage implements OnInit, OnDestroy {
     const previousLevel = this.game.level;
     const levelCompleted = reason === 'time' && this.answered >= 8 && accuracy >= 50;
     this.game.completeGame(this.score, accuracy, this.combo, modeName, this.daily, this.mode as GameModeId, this.level, levelCompleted);
-    if (this.game.level > previousLevel) this.audio.success();
-
-    // Natural breakpoint: leaving a finished round. Frequency-capped inside
-    // AdmobService so this doesn't show on every single round.
-    await this.admob.maybeShowInterstitialAtBreakpoint();
+    // Natural breakpoint: leaving a finished round.
+    // Shows an interstitial every 3 completed rounds (with 90s cooldown),
+    // and suppresses if player already watched a rewarded video during this round.
+    if (!this.continueUsed) {
+      await this.admob.maybeShowInterstitialAtBreakpoint();
+    }
     this.router.navigateByUrl('/result');
   }
 
