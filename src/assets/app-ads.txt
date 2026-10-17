@@ -3,7 +3,7 @@
 # (Found in Google AdMob Console > Settings > Account Information > Publisher ID)
 #
 # Once published, host this file at the root of your developer website:
-# Example: https://yourdomain.com/app-ads.txt
+# Example: https://admobility.in/app-ads.txt
 #
 google.com, pub-2030586584805301, DIRECT, f08c47fec0942fa0
 
