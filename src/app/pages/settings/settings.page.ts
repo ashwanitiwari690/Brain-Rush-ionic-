@@ -12,15 +12,13 @@ import {
   trashBin,
   informationCircle,
   shieldCheckmark,
-  optionsOutline,
-  language as languageIcon,
-  chevronDown
+  optionsOutline
 } from 'ionicons/icons';
 import { AudioService } from '../../services/audio.service';
 import { GameService } from '../../services/game.service';
 import { AdmobService } from '../../services/admob.service';
 import { TranslatePipe } from '../../services/translate.pipe';
-import { AppLanguage, LanguageService } from '../../services/language.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-settings',
@@ -31,7 +29,6 @@ import { AppLanguage, LanguageService } from '../../services/language.service';
   styleUrls: ['settings.page.scss']
 })
 export class SettingsPage {
-  languageOpen = false;
 
   constructor(
     private router: Router,
@@ -50,9 +47,7 @@ export class SettingsPage {
       trashBin,
       informationCircle,
       shieldCheckmark,
-      optionsOutline,
-      language: languageIcon,
-      chevronDown
+      optionsOutline
     });
   }
 
@@ -84,20 +79,6 @@ export class SettingsPage {
     const success = await this.admob.showPrivacyOptions();
     if (!success) {
       alert(this.language.t('settings.adSettingsUnavailable'));
-    }
-  }
-
-  toggleLanguageMenu() {
-    this.languageOpen = !this.languageOpen;
-  }
-
-  setLanguage(value: AppLanguage) {
-    this.language.setLanguage(value);
-    this.languageOpen = false;
-
-    // Give immediate feedback when changing language if sound is enabled.
-    if (this.audio.soundEnabled) {
-      this.audio.click();
     }
   }
 

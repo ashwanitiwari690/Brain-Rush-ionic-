@@ -63,82 +63,6 @@
       </div>
 
       <div class="settings-section">
-        <div class="label">{{ 'settings.language' | translate }}</div>
-
-        <div class="card language-card">
-          <div class="language-row">
-            <ion-icon name="language"></ion-icon>
-
-            <div class="language-copy">
-              <b>{{ 'settings.language' | translate }}</b>
-              <small>{{ 'settings.languageDesc' | translate }}</small>
-            </div>
-
-            <div class="language-picker">
-              <button
-                type="button"
-                class="language-trigger"
-                [class.open]="languageOpen"
-                (click)="toggleLanguageMenu()"
-                [attr.aria-expanded]="languageOpen"
-                aria-haspopup="listbox">
-
-                <span>
-                  {{ language.language() === 'en'
-                    ? ('settings.english' | translate)
-                    : ('settings.hindi' | translate) }}
-                </span>
-
-                <ion-icon
-                  name="chevron-down"
-                  [class.rotated]="languageOpen">
-                </ion-icon>
-              </button>
-
-              @if (languageOpen) {
-              <div
-                class="language-menu"
-                role="listbox">
-
-                <button
-                  type="button"
-                  role="option"
-                  class="language-option"
-                  [class.selected]="language.language() === 'en'"
-                  [attr.aria-selected]="language.language() === 'en'"
-                  (click)="setLanguage('en')">
-
-                  <span class="language-flag">🇬🇧</span>
-                  <span class="language-name">English</span>
-
-                  @if (language.language() === 'en') {
-                    <span class="check">✓</span>
-                  }
-                </button>
-
-                <button
-                  type="button"
-                  role="option"
-                  class="language-option"
-                  [class.selected]="language.language() === 'hi'"
-                  [attr.aria-selected]="language.language() === 'hi'"
-                  (click)="setLanguage('hi')">
-
-                  <span class="language-flag">🇮🇳</span>
-                  <span class="language-name">हिन्दी</span>
-
-                  @if (language.language() === 'hi') {
-                    <span class="check">✓</span>
-                  }
-                </button>
-              </div>
-            }
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-section">
         <div class="label">{{ 'settings.account' | translate }}</div>
 
         <div class="card rows">
@@ -217,7 +141,7 @@
               <b>{{ 'settings.version' | translate }}</b>
             </span>
 
-            <b>1.0.0</b>
+            <b>1.0.8</b>
           </div>
         </div>
       </div>

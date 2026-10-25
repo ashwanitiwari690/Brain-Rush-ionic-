@@ -277,6 +277,28 @@ export class AudioService {
     });
   }
 
+  private pausedByAd = false;
+
+  pauseForAd(): void {
+    if (this.musicTimer) {
+      this.pausedByAd = true;
+      this.stopMusic();
+    }
+    if (this.ctx && this.ctx.state === 'running') {
+      this.ctx.suspend().catch(() => {});
+    }
+  }
+
+  resumeAfterAd(): void {
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+    if (this.pausedByAd && this.musicEnabled) {
+      this.pausedByAd = false;
+      this.startMusic();
+    }
+  }
+
   stopMusic() {
     if (this.musicTimer) {
       clearInterval(this.musicTimer);

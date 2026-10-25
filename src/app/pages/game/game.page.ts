@@ -57,6 +57,19 @@ export class GamePage implements OnInit, OnDestroy {
 
   quickQuestion = 'Which number is EVEN?';
   quickChoices: number[] = [7, 12, 15, 19];
+  private lastQuickType = -1;
+
+  /** Fisher-Yates shuffle to guarantee unbiased random positioning for answer choices. */
+  private shuffleArray<T>(items: T[]): T[] {
+    const arr = [...items];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+    }
+    return arr;
+  }
 
   private targetAnswer = 12;
   private timerId?: ReturnType<typeof setInterval>;
@@ -102,6 +115,9 @@ export class GamePage implements OnInit, OnDestroy {
   }
 
   get title(): string {
+    if (this.daily) {
+      return this.language.t('game.dailyChallenge').toUpperCase();
+    }
     return ({
       math: this.language.t('mode.math.name').toUpperCase(),
       reaction: this.language.t('mode.reaction.name').toUpperCase(),
@@ -145,6 +161,7 @@ export class GamePage implements OnInit, OnDestroy {
     this.continueOffered = false;
     this.continueUsed = false;
     this.continueAdError = false;
+    this.lastQuickType = -1;
     this.clearTimers();
     this.audio.startMusic();
     this.nextRound();
@@ -236,7 +253,7 @@ export class GamePage implements OnInit, OnDestroy {
       const offset = Math.floor(Math.random() * (spread * 2 + 1)) - spread;
       if (offset !== 0) values.add(Math.max(0, answer + offset));
     }
-    this.answers = [...values].sort(() => Math.random() - 0.5);
+    this.answers = this.shuffleArray([...values]);
   }
 
   answer(value: number): void {
@@ -266,7 +283,7 @@ export class GamePage implements OnInit, OnDestroy {
     const maxValue = this.level >= 8 ? 15 : this.level >= 5 ? 12 : 9;
     const values = new Set<number>([target]);
     while (values.size < choiceCount) values.add(Math.floor(Math.random() * maxValue) + 1);
-    this.memoryChoices = [...values].sort(() => Math.random() - 0.5);
+    this.memoryChoices = this.shuffleArray([...values]);
   }
 
   memoryPick(value: number): void {
@@ -351,7 +368,7 @@ export class GamePage implements OnInit, OnDestroy {
       const offset = Math.floor(Math.random() * (spread * 2 + 1)) - spread;
       if (offset !== 0) distractors.add(Math.max(1, answer + offset));
     }
-    this.sequenceChoices = [...distractors].sort(() => Math.random() - 0.5);
+    this.sequenceChoices = this.shuffleArray([...distractors]);
   }
 
   sequencePick(value: number): void {
@@ -362,49 +379,205 @@ export class GamePage implements OnInit, OnDestroy {
   }
 
   private makeQuick(): void {
+    const isDaily = this.daily;
     const level = this.level;
-    const type = level <= 2 ? Math.floor(Math.random() * 2) : level <= 4 ? Math.floor(Math.random() * 3) : level <= 7 ? Math.floor(Math.random() * 4) : Math.floor(Math.random() * 5);
+    const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    // Available question types:
+    // 0: Even number
+    // 1: Odd number
+    // 2: Choose largest
+    // 3: Choose smallest
+    // 4: Prime number
+    // 5: Divisible by X
+    // 6: Multiple of X
+    // 7: Closest to target
+    // 8: Perfect square
+    // 9: Quick arithmetic
+    let pool: number[];
+    if (isDaily) {
+      pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    } else {
+      if (level <= 2) pool = [0, 1, 2, 3];
+      else if (level <= 4) pool = [0, 1, 2, 3, 4, 5];
+      else if (level <= 6) pool = [0, 1, 2, 3, 4, 5, 6, 7];
+      else pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    }
+
+    // Never repeat the exact same category two rounds in a row
+    const available = pool.filter(t => t !== this.lastQuickType);
+    const type = available.length > 0
+      ? available[Math.floor(Math.random() * available.length)]
+      : pool[Math.floor(Math.random() * pool.length)];
+    this.lastQuickType = type;
+
     let question = '';
     let answer = 0;
-    let choices: number[] = [];
-    const shuffle = <T>(items: T[]) => items.sort(() => Math.random() - 0.5);
+    let distractors: number[] = [];
 
     if (type === 0) {
-      const even = Math.random() > 0.5;
-      question = even ? this.language.t('game.even') : (this.language.language() === 'hi' ? 'कौन सा नंबर विषम है?' : 'Which number is ODD?');
-      const base = level >= 8 ? Math.floor(Math.random() * 40) + 20 : 10;
-      const good = even ? [base + 2, base + 6, base + 10, base + 14, base + 18] : [base + 1, base + 5, base + 9, base + 13, base + 17];
-      const bad = even ? [base + 1, base + 5, base + 9, base + 13, base + 17] : [base + 2, base + 6, base + 10, base + 14, base + 18];
-      answer = good[Math.floor(Math.random() * good.length)];
-      choices = [answer, ...shuffle(bad).slice(0, 3)];
+      // EVEN
+      question = this.language.t('game.even');
+      const start = rand(10, 450) * 2;
+      answer = start + rand(1, 10) * 2;
+      const badSet = new Set<number>();
+      while (badSet.size < 3) {
+        const d = start + rand(-10, 15) * 2 + 1;
+        if (d > 0 && d !== answer) badSet.add(d);
+      }
+      distractors = [...badSet];
     } else if (type === 1) {
-      question = this.language.t('game.prime');
-      const primes = level >= 8 ? [47, 53, 59, 61, 67, 71, 73, 79] : [11, 13, 17, 19, 23, 29, 31];
-      const nonPrimes = level >= 8 ? [48, 51, 55, 57, 63, 65, 69, 75] : [12, 15, 18, 21, 22, 24, 27];
-      answer = primes[Math.floor(Math.random() * primes.length)];
-      choices = [answer, ...shuffle(nonPrimes).slice(0, 3)];
+      // ODD
+      question = this.language.t('game.odd');
+      const start = rand(10, 450) * 2;
+      answer = start + rand(1, 10) * 2 + 1;
+      const badSet = new Set<number>();
+      while (badSet.size < 3) {
+        const d = start + rand(-10, 15) * 2;
+        if (d > 0 && d !== answer) badSet.add(d);
+      }
+      distractors = [...badSet];
     } else if (type === 2) {
-      question = this.language.t('game.divisible3');
-      const good = [24, 27, 33, 36, 42, 45, 51, 57, 63, 66];
-      const bad = [25, 28, 31, 34, 38, 41, 43, 46, 49, 52];
-      answer = good[Math.floor(Math.random() * good.length)];
-      choices = [answer, ...shuffle(bad).slice(0, 3)];
+      // LARGEST
+      question = this.language.t('game.largest');
+      const numSet = new Set<number>();
+      const baseMin = rand(10, 350);
+      while (numSet.size < 4) {
+        numSet.add(rand(baseMin, baseMin + 180));
+      }
+      const arr = [...numSet];
+      answer = Math.max(...arr);
+      distractors = arr.filter(n => n !== answer);
     } else if (type === 3) {
-      question = this.language.t('game.closest50');
-      const center = level >= 8 ? 75 : 50;
-      choices = shuffle([center - 11, center - 4, center + 2, center + 13]);
-      answer = center + 2;
+      // SMALLEST
+      question = this.language.t('game.smallest');
+      const numSet = new Set<number>();
+      const baseMin = rand(10, 350);
+      while (numSet.size < 4) {
+        numSet.add(rand(baseMin, baseMin + 180));
+      }
+      const arr = [...numSet];
+      answer = Math.min(...arr);
+      distractors = arr.filter(n => n !== answer);
+    } else if (type === 4) {
+      // PRIME
+      question = this.language.t('game.prime');
+      const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97];
+      const composites = [
+        4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 27, 28, 30,
+        32, 33, 34, 35, 36, 38, 39, 40, 42, 44, 45, 46, 48, 49, 50, 51, 52, 54,
+        55, 56, 57, 58, 60, 62, 63, 64, 65, 66, 68, 69, 70, 72, 74, 75, 76, 77,
+        78, 80, 81, 82, 84, 85, 86, 87, 88, 90, 91, 92, 93, 94, 95, 96, 98, 99
+      ];
+      answer = primes[rand(0, primes.length - 1)];
+      const compSet = new Set<number>();
+      while (compSet.size < 3) {
+        compSet.add(composites[rand(0, composites.length - 1)]);
+      }
+      distractors = [...compSet];
+    } else if (type === 5) {
+      // DIVISIBLE BY X
+      const divisors = [3, 4, 5, 6, 8, 10];
+      const div = divisors[rand(0, divisors.length - 1)];
+      question = this.language.t('game.divisibleBy', { value: div });
+      const k = rand(4, 30);
+      answer = div * k;
+      const badSet = new Set<number>();
+      while (badSet.size < 3) {
+        const offset = rand(-14, 14);
+        const cand = answer + offset;
+        if (cand > 0 && cand % div !== 0) {
+          badSet.add(cand);
+        }
+      }
+      distractors = [...badSet];
+    } else if (type === 6) {
+      // MULTIPLE OF X
+      const multBases = [7, 9, 11, 12];
+      const base = multBases[rand(0, multBases.length - 1)];
+      question = this.language.t('game.multipleOf', { value: base });
+      const k = rand(3, 20);
+      answer = base * k;
+      const badSet = new Set<number>();
+      while (badSet.size < 3) {
+        const offset = rand(-12, 12);
+        const cand = answer + offset;
+        if (cand > 0 && cand % base !== 0) {
+          badSet.add(cand);
+        }
+      }
+      distractors = [...badSet];
+    } else if (type === 7) {
+      // CLOSEST TO TARGET
+      const targets = [50, 100, 200, 500];
+      const target = targets[rand(0, targets.length - 1)];
+      question = this.language.t('game.closestTo', { value: target });
+      const winDist = rand(1, 6);
+      answer = Math.random() > 0.5 ? target + winDist : target - winDist;
+      const usedDists = new Set<number>([winDist]);
+      const badSet = new Set<number>();
+      while (badSet.size < 3) {
+        const d = rand(winDist + 3, winDist + 28);
+        if (!usedDists.has(d)) {
+          usedDists.add(d);
+          const cand = Math.random() > 0.5 ? target + d : target - d;
+          if (cand > 0 && cand !== answer) {
+            badSet.add(cand);
+          }
+        }
+      }
+      distractors = [...badSet];
+    } else if (type === 8) {
+      // PERFECT SQUARE
+      const squareRoots = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+      const root = squareRoots[rand(0, squareRoots.length - 1)];
+      answer = root * root;
+      question = this.language.t('game.square');
+      const badSet = new Set<number>();
+      while (badSet.size < 3) {
+        const offset = rand(-9, 9);
+        const cand = answer + offset;
+        const sqrt = Math.round(Math.sqrt(cand));
+        if (cand > 1 && sqrt * sqrt !== cand) {
+          badSet.add(cand);
+        }
+      }
+      distractors = [...badSet];
     } else {
-      question = level >= 9
-        ? (this.language.language() === 'hi' ? 'कौन सा गुणनफल 7 का गुणज है?' : 'Which product is a multiple of 7?')
-        : (this.language.language() === 'hi' ? 'सबसे बड़ा नंबर चुनें' : 'Choose the largest number');
-      if (level >= 9) { answer = 56; choices = shuffle([56, 54, 55, 58]); }
-      else { answer = 99; choices = shuffle([99, 87, 92, 95]); }
+      // QUICK ARITHMETIC
+      const ops = ['+', '-', '×'];
+      const op = ops[rand(0, ops.length - 1)];
+      let a = 0;
+      let b = 0;
+      if (op === '+') {
+        a = rand(12, 60);
+        b = rand(8, 45);
+        answer = a + b;
+      } else if (op === '-') {
+        a = rand(25, 95);
+        b = rand(6, a - 5);
+        answer = a - b;
+      } else {
+        a = rand(4, 12);
+        b = rand(3, 9);
+        answer = a * b;
+      }
+      question = this.language.t('game.whichEquals', { expr: `${a} ${op} ${b}` });
+      const badSet = new Set<number>();
+      while (badSet.size < 3) {
+        const offset = rand(-8, 8);
+        const cand = answer + offset;
+        if (cand > 0 && cand !== answer) {
+          badSet.add(cand);
+        }
+      }
+      distractors = [...badSet];
     }
 
     this.quickQuestion = question;
     this.targetAnswer = answer;
-    this.quickChoices = choices;
+    // Fisher-Yates shuffle the choices so the correct answer is randomized across all 4 button positions!
+    this.quickChoices = this.shuffleArray([answer, ...distractors]);
   }
 
   quickPick(value: number): void {

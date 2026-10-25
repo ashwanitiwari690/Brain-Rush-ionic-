@@ -50,6 +50,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private onConnectivityChange = () => {
     this.updateBannerVisibility();
+    if (this.connectivity.online) {
+      this.admob.onNetworkReconnected();
+    }
   };
 
   private updateBannerVisibility(): void {

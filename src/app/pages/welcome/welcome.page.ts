@@ -3,7 +3,7 @@ import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AudioService } from '../../services/audio.service';
 import { TranslatePipe } from '../../services/translate.pipe';
-import { AppLanguage, LanguageService } from '../../services/language.service';
+import { LanguageService } from '../../services/language.service';
 import { addIcons } from 'ionicons';
 import {
   play,
@@ -14,8 +14,7 @@ import {
   volumeHigh,
   volumeMute,
   musicalNotes,
-  shieldCheckmark,
-  language as languageIcon
+  shieldCheckmark
 } from 'ionicons/icons';
 
 @Component({
@@ -45,8 +44,7 @@ export class WelcomePage implements OnInit, OnDestroy {
       volumeHigh,
       volumeMute,
       musicalNotes,
-      shieldCheckmark,
-      language: languageIcon
+      shieldCheckmark
     });
   }
 
@@ -78,11 +76,6 @@ export class WelcomePage implements OnInit, OnDestroy {
     this.audio.unlock();
     this.audio.click();
     this.router.navigateByUrl('/daily-challenge');
-  }
-
-  selectLanguage(value: AppLanguage): void {
-    this.language.setLanguage(value);
-    this.audio.unlock();
   }
 
   toggleMusic(): void {
